@@ -1,15 +1,27 @@
+import java.net.InetSocketAddress;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class Node {
 	// DECLARATION
-	public void newChord(/*1 PARAM*/) {
+	private InetSocketAddress nodeAddr;
+	private HashMap<Integer, InetSocketAddress> fingerTable;
+	
+	public Node () {
+	}
+	
+	public void newChord(int destPort) {
 		//TO DO
 		this.choose();
 	}
 	
-	public void joinNetwork(/*3 PARAMS*/) {
+	public void joinNetwork(int destPort, int connectIP, int connectPort) {
 		//TO DO
 		this.choose();
+	}
+	
+	public int assignID(InetSocketAddress newNodeAddr) {
+		return -1;
 	}
 	
 	private void choose() {
@@ -19,21 +31,28 @@ public class Node {
 				+ "DELETENODE\n");
 			Scanner in = new Scanner(System.in);
 			String operation = in.next().toUpperCase();
-			switch(operation){
-			case "INFO" : this.displayInfo(); break; //crea rete
-			case "DELETENODE" : System.exit(1); break; //cancella
-			default : System.exit(-1); break;
+			switch(operation) {
+				case "INFO" : 
+					this.displayInfo(); 
+					break; // shows finger table
+				case "DELETENODE" : 
+					System.exit(1); // 1 represent the exit in a correct way
+					break; // delete the node
+				default : 
+					System.out.println("\nWrong Node Command!\n"); // ask again
+					break;
 			}
-			}
+		}
 	}
 
 	public static void searchItem() {
 		// TODO Auto-generated method stub
-		//WE CANNOT USE this KEYWORD
+		// method in the main menu part will be developed here here
 	}
 
 	private void displayInfo() {
 		// TODO Auto-generated method stub
-		//PRINT FINGERTABLE
+		System.out.println("\nNode finger table:\n");
+		System.out.println(fingerTable);
 	}
 }
