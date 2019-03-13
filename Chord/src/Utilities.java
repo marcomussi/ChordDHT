@@ -1,6 +1,9 @@
-import java.math.BigInteger; 
+import java.math.BigInteger;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.security.MessageDigest; 
-import java.security.NoSuchAlgorithmException; 
+import java.security.NoSuchAlgorithmException;
+import java.util.HashMap; 
 
 public class Utilities {
 	// Method to calculate the SHA-1 of a given input string
@@ -24,8 +27,8 @@ public class Utilities {
                 hashtext = "0" + hashtext; 
             } 
   
-            // return the HashText 
-            return hashtext; 
+            // return the last 8 characters of the HashText 
+            return hashtext.substring(hashtext.length() - 8); 
         } 
   
         // For specifying wrong message digest algorithms 
@@ -39,5 +42,31 @@ public class Utilities {
 		// TODO Auto-generated method stub
 		// method in the main menu part will be developed here here
 	}
-
+	
+	public static void displayFingerTable(Node inputNode){
+		String encryptedAddress = Utilities.encryptString(inputNode.getNodeAddress().toString());
+		Long encryptedAddressLong = Long.parseLong(encryptedAddress, 16);
+		HashMap<Integer, InetSocketAddress> fingerTable = inputNode.getFingerTable();
+		int size = fingerTable.size();
+		System.out.println("i   hash(current node) + 2^i   successor");
+		Long currentHash;
+		for(int i=0 ; i < size; i++)
+		{
+			currentHash = (long) Math.pow(2, i) + encryptedAddressLong;
+			System.out.println(i + "   " + Long.toHexString(currentHash) + "                   " +  fingerTable.get(i));
+		}
+	}
+	
+	/*
+	public static void main(String[] args){
+		Node prova = new Node();
+		prova.setNodeAddr(new InetSocketAddress("127.0.0.1", 54));
+		HashMap<Integer, InetSocketAddress> finger = new HashMap<>();
+		prova.setFingerTable(finger);
+		finger.put(0, new InetSocketAddress("127.0.0.1", 54));
+		finger.put(1, new InetSocketAddress("127.0.0.1", 54));
+		finger.put(2, new InetSocketAddress("127.0.0.1", 54));
+		Utilities.displayFingerTable(prova);
+	}
+	*/
 }
