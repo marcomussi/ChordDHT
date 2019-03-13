@@ -3,7 +3,7 @@ public class Stabilize extends Thread {
 	private Node node;
 	
 	public Stabilize(Node n) {
-		node = n;
+		this.node = n;
 	}
 	
 	@Override

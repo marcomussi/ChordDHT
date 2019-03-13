@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -42,7 +43,11 @@ public class Node {
 	}
 
 	private void initializeNode() {
-		listenerThread = new Listener(this);
+		try {
+			listenerThread = new Listener(this);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		stabilizerThread = new Stabilize(this);
 		//PRED
 	}
