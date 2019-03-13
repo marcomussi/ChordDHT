@@ -3,14 +3,18 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 public class Node {
-	// DECLARATION
+	
 	private InetSocketAddress nodeAddr;
+	private InetSocketAddress predecessorAddr;
+	
 	private HashMap<Integer, InetSocketAddress> fingerTable;
 	private Scanner in;
+	private Listener listenerThread;
+	private Stabilize stabilizerThread;
 	
 	public Node () {
-		nodeAddr = new InetSocketAddress(1);
 		fingerTable = new HashMap<Integer, InetSocketAddress>();
+		predecessorAddr = null;
 	}
 	
 	public void newChord(InetSocketAddress thisNode) {
@@ -23,14 +27,24 @@ public class Node {
 	public void joinNetwork(InetSocketAddress thisNode,InetSocketAddress connectionNode) {
 		nodeAddr = thisNode;
 		//request of the ID from by socket request
+		
+		predecessorAddr = this.askTo(connectionNode);
 		this.initializeNode();
 		this.choose();
 	}
 	
+	private InetSocketAddress askTo(InetSocketAddress connectionNode) {
+		// TODO Auto-generated method stub
+		//send request and see response
+		//id is given by the hash of my address
+		// i must receive 
+		return null;
+	}
+
 	private void initializeNode() {
-		// Stabilize process
-		// Listener socket
-		
+		listenerThread = new Listener(this);
+		stabilizerThread = new Stabilize(this);
+		//PRED
 	}
 
 	private int assignID(InetSocketAddress newNodeAddr) {
@@ -65,6 +79,14 @@ public class Node {
 
 	public InetSocketAddress getNodeAddress() {
 		return nodeAddr;
+	}
+
+	public HashMap<Integer, InetSocketAddress> getFingerTable() {
+		return fingerTable;
+	}
+
+	public void setFingerTable(HashMap<Integer, InetSocketAddress> fingerTable) {
+		this.fingerTable = fingerTable;
 	}
 
 
