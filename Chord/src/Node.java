@@ -5,22 +5,34 @@ import java.util.Scanner;
 public class Node {
 	// DECLARATION
 	private InetSocketAddress nodeAddr;
-	private HashMap<Integer, InetSocketAddress> fingerTable;
+	// private HashMap<Integer, InetSocketAddress> fingerTable;
+	private Scanner in;
 	
 	public Node () {
+		nodeAddr = new InetSocketAddress(-1);
+		// fingerTable = new HashMap<Integer, InetSocketAddress>();
 	}
 	
-	public void newChord(int destPort) {
-		//TO DO
+	public void newChord(InetSocketAddress thisNode) {
+		// port choosen by user and ip of the device automatically catched
+		this.initializeNode();
 		this.choose();
 	}
 	
-	public void joinNetwork(int destPort, int connectIP, int connectPort) {
+	public void joinNetwork(InetSocketAddress thisNode,InetSocketAddress connectionNode) {
 		//TO DO
+		//otteniamo le info
+		//gen
+		this.initializeNode();
 		this.choose();
 	}
 	
-	public int assignID(InetSocketAddress newNodeAddr) {
+	private void initializeNode() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private int assignID(InetSocketAddress newNodeAddr) {
 		return -1;
 	}
 	
@@ -29,7 +41,7 @@ public class Node {
 			System.out.println("Select the operation:\n"
 				+ "INFO\n"
 				+ "DELETENODE\n");
-			Scanner in = new Scanner(System.in);
+			in = new Scanner(System.in);
 			String operation = in.next().toUpperCase();
 			switch(operation) {
 				case "INFO" : 
@@ -53,6 +65,6 @@ public class Node {
 	private void displayInfo() {
 		// TODO Auto-generated method stub
 		System.out.println("\nNode finger table:\n");
-		System.out.println(fingerTable);
+		// System.out.println(fingerTable);
 	}
 }
