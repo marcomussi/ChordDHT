@@ -5,17 +5,16 @@ import java.util.Scanner;
 
 public class Client {
 
-	private static Scanner in;
-
 	public static void main(String[] args) throws UnknownHostException {
 	
+		int localPort, connectPort;
+		String connectIP;
+		Node x;
+		Scanner in;
+		
 		/* while true loop is only to avoid the termination of the program
 		 * in case of wrong command, in case of a correct one the execution
 		 * is moved to the Node class code */
-		Node x;
-		int localPort, connectPort;
-		String connectIP;
-		
 		while(true) {
 		
 			System.out.println("Select the operation:\n"
@@ -44,7 +43,7 @@ public class Client {
 												new InetSocketAddress(connectIP,connectPort)); } 
 					break;	
 				case "SEARCH" : // search in a node specified
-					Node.searchItem(); 
+					//Utilities.searchItem(); 
 					break;
 				default : // if the command is different from the above the program ends
 					System.out.println("\nWrong Input!\n"); 

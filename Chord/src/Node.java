@@ -5,30 +5,31 @@ import java.util.Scanner;
 public class Node {
 	// DECLARATION
 	private InetSocketAddress nodeAddr;
-	// private HashMap<Integer, InetSocketAddress> fingerTable;
+	private HashMap<Integer, InetSocketAddress> fingerTable;
 	private Scanner in;
 	
 	public Node () {
-		nodeAddr = new InetSocketAddress(-1);
-		// fingerTable = new HashMap<Integer, InetSocketAddress>();
+		nodeAddr = new InetSocketAddress(1);
+		fingerTable = new HashMap<Integer, InetSocketAddress>();
 	}
 	
 	public void newChord(InetSocketAddress thisNode) {
 		// port choosen by user and ip of the device automatically catched
+		nodeAddr = thisNode;
 		this.initializeNode();
 		this.choose();
 	}
 	
 	public void joinNetwork(InetSocketAddress thisNode,InetSocketAddress connectionNode) {
-		//TO DO
-		//otteniamo le info
-		//gen
+		nodeAddr = thisNode;
+		//request of the ID from by socket request
 		this.initializeNode();
 		this.choose();
 	}
 	
 	private void initializeNode() {
-		// TODO Auto-generated method stub
+		// Stabilize process
+		// Listener socket
 		
 	}
 
@@ -57,14 +58,14 @@ public class Node {
 		}
 	}
 
-	public static void searchItem() {
-		// TODO Auto-generated method stub
-		// method in the main menu part will be developed here here
+	private void displayInfo() {
+		System.out.println("\nNode finger table:\n");
+		System.out.println(fingerTable);
 	}
 
-	private void displayInfo() {
-		// TODO Auto-generated method stub
-		System.out.println("\nNode finger table:\n");
-		// System.out.println(fingerTable);
+	public InetSocketAddress getNodeAddress() {
+		return nodeAddr;
 	}
+
+
 }
