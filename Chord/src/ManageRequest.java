@@ -41,6 +41,7 @@ public class ManageRequest extends Thread{
 		{
 			InetSocketAddress response = node.findSuccessor(((GetSuccessorRequest) request).getId());
 			try {
+				System.out.println("SONO NEL TRY CATCH WOOOO");
 				output = socket.getOutputStream();
 				objectOutputStream = new ObjectOutputStream(output);
 				objectOutputStream.writeObject(response);

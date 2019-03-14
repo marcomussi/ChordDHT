@@ -125,6 +125,7 @@ public class Node {
 	}
 
 	private InetSocketAddress closestPrecedingNode(Long id) {
+		System.out.print("ClosestPreceding chiamata");
 		for(int i=31;i>=0;i--) {
 			if(this.fingerTable.get(i).getIntervalUpperbound()>this.currentIntervalUpperBound 
 					&& this.fingerTable.get(i).getIntervalUpperbound()<id) {
@@ -135,6 +136,7 @@ public class Node {
 	}
 
 	private static InetSocketAddress requestToNode(InetSocketAddress destination, Request request){
+		System.out.println("RequestToNode invocata");
 		Socket socket;
 		OutputStream output;
 		InputStream input;
@@ -144,14 +146,14 @@ public class Node {
 			output = socket.getOutputStream();
 			objectOutputStream = new ObjectOutputStream(output);
 			objectOutputStream.writeObject(request);
-			//input = socket.getInputStream();
-			//ObjectInputStream objectInputStream = new ObjectInputStream(input);
-			//InetSocketAddress result = (InetSocketAddress) objectInputStream.readObject();
-			//return result;
+			input = socket.getInputStream();
+			ObjectInputStream objectInputStream = new ObjectInputStream(input);
+			InetSocketAddress result = (InetSocketAddress) objectInputStream.readObject();
+			return result;
 		} catch (IOException e) {	
 			e.printStackTrace();
-		//} catch (ClassNotFoundException e) {	
-			//e.printStackTrace();
+		} catch (ClassNotFoundException e) {	
+			e.printStackTrace();
 		}
 		return null;		
 	}
