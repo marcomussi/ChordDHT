@@ -15,6 +15,7 @@ public class Listener extends Thread {
 	@Override
 	public void run() {	
 		while (true) {
+			System.out.println("Started listener" + node.getNodeAddress());
 			Socket connection = null;
 			try {
 				connection = serverSocket.accept();

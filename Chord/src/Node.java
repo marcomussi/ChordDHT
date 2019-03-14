@@ -3,14 +3,10 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Scanner;
-
-import com.sun.corba.se.spi.orbutil.fsm.Guard.Result;
-
 import Request.GetSuccessorRequest;
 import Request.Request;
 
@@ -46,6 +42,8 @@ public class Node {
 		//fingerTable.put(0, connectionNode);
 		//SISTEMARE
 		Utilities.initFingerHashMap(fingerTable,32,currentIntervalUpperBound);
+		InetSocketAddress successorAddress = Node.requestToNode(connectionNode, new GetSuccessorRequest(currentIntervalUpperBound));
+		fingerTable.put(0, new FingerObject(successorAddress, fingerTable.get(0).getIntervalUpperbound()));
 		this.lauchThreads();
 		this.choose();
 	}
@@ -67,10 +65,6 @@ public class Node {
 		//PRED
 	}
 
-	private int assignID(InetSocketAddress newNodeAddr) {
-		return -1;
-	}
-	
 	private void choose() {
 		while(true){
 			System.out.println("Select the operation:\n"
@@ -94,7 +88,7 @@ public class Node {
 
 	private void displayInfo() {
 		System.out.println("\nNode finger table:\n");
-		System.out.println(fingerTable);
+		Utilities.displayFingerTable(this);
 	}
 
 	public InetSocketAddress getNodeAddress() {
@@ -137,7 +131,7 @@ public class Node {
 		return this.getNodeAddress();
 	}
 
-	private InetSocketAddress requestToNode(InetSocketAddress destination, Request request){
+	private static InetSocketAddress requestToNode(InetSocketAddress destination, Request request){
 		Socket socket;
 		OutputStream output;
 		InputStream input;
