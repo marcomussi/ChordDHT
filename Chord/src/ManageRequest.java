@@ -2,8 +2,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+
+import Request.GetSuccessorRequest;
 
 public class ManageRequest extends Thread{
 
@@ -24,30 +29,30 @@ public class ManageRequest extends Thread{
 		
 		try {
 			input = socket.getInputStream();
-			if (input != null) {
-				BufferedReader bufReader = 
-						new BufferedReader(new InputStreamReader(input));
-				line = null;
-				try {
-					line = bufReader.readLine();
-				} catch (IOException e) {
-					e.printStackTrace();
-					req = null;
-				}
-			}
-			req = line;
-			String response = process(req);
-			if (response != null) {
-				output = socket.getOutputStream();
-				output.write(response.getBytes());
-			}
-			input.close();
+			ObjectInputStream objectInputStream = new ObjectInputStream(input);
+			process(objectInputStream.readObject());
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	private String process(String request) {
+	private String process(Object request) {
+		OutputStream output;
+		ObjectOutputStream objectOutputStream;
+		if(request instanceof GetSuccessorRequest)
+		{
+			InetSocketAddress response = node.findSuccessor(((GetSuccessorRequest) request).getId());
+			try {
+				output = socket.getOutputStream();
+				objectOutputStream = new ObjectOutputStream(output);
+				objectOutputStream.writeObject(response);
+			} catch (IOException e) {	
+				e.printStackTrace();
+			}
+		}
 		return null;
 	}
 }

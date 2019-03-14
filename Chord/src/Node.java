@@ -1,13 +1,24 @@
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.Scanner;
+
+import com.sun.corba.se.spi.orbutil.fsm.Guard.Result;
+
+import Request.GetSuccessorRequest;
+import Request.Request;
 
 public class Node {
 	
 	private InetSocketAddress nodeAddr;
 	private InetSocketAddress predecessorAddr;
-	private Long currentIntervalUpperBound;
+	public Long currentIntervalUpperBound;
 	
 	private HashMap<Integer, FingerObject> fingerTable;
 	private Scanner in;
@@ -16,7 +27,6 @@ public class Node {
 	
 	public Node () {
 		fingerTable = new HashMap<Integer, FingerObject>();
-		Utilities.initFingerHashMap(fingerTable,32,null);
 		predecessorAddr = null;
 	}
 	
@@ -24,6 +34,7 @@ public class Node {
 		// port choosen by user and ip of the device automatically catched
 		nodeAddr = thisNode;
 		currentIntervalUpperBound = Utilities.encryptString(this.nodeAddr.toString());
+		Utilities.initFingerHashMap(fingerTable,32,currentIntervalUpperBound);
 		this.lauchThreads();
 		this.choose();
 	}
@@ -34,7 +45,7 @@ public class Node {
 		//request of the ID from by socket request
 		//fingerTable.put(0, connectionNode);
 		//SISTEMARE
-		predecessorAddr = this.askTo(connectionNode);
+		Utilities.initFingerHashMap(fingerTable,32,currentIntervalUpperBound);
 		this.lauchThreads();
 		this.choose();
 	}
@@ -112,8 +123,8 @@ public class Node {
 			return this.getSuccessorAddress();
 		}
 		InetSocketAddress auxNode = this.closestPrecedingNode(id);
-		//CONNESSIONE AD AUXNODE
-		return this.findSuccessor(id);
+		GetSuccessorRequest getSuccessorRequest = new GetSuccessorRequest(id);
+		return requestToNode(auxNode, getSuccessorRequest);
 	}
 
 	private InetSocketAddress closestPrecedingNode(Long id) {
@@ -125,6 +136,26 @@ public class Node {
 		}
 		return this.getNodeAddress();
 	}
-	
 
+	private InetSocketAddress requestToNode(InetSocketAddress destination, Request request){
+		Socket socket;
+		OutputStream output;
+		InputStream input;
+		ObjectOutputStream objectOutputStream;
+		try {
+			socket = new Socket(destination.getAddress(), destination.getPort());
+			output = socket.getOutputStream();
+			objectOutputStream = new ObjectOutputStream(output);
+			objectOutputStream.writeObject(request);
+			input = socket.getInputStream();
+			ObjectInputStream objectInputStream = new ObjectInputStream(input);
+			InetSocketAddress result = (InetSocketAddress) objectInputStream.readObject();
+			return result;
+		} catch (IOException e) {	
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {	
+			e.printStackTrace();
+		}
+		return null;		
+	}
 }

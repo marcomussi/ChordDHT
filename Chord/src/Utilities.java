@@ -37,44 +37,35 @@ public class Utilities {
 	}
 	
 	public static void displayFingerTable(Node inputNode){
-		Long encryptedAddress = Utilities.encryptString(inputNode.
-				getNodeAddress().toString());
 		HashMap<Integer, FingerObject> fingerTable = inputNode.getFingerTable();
 		int size = fingerTable.size();
 		System.out.println("i   hash(current node) + 2^i   successor");
-		Long currentHash;
 		for(int i=0 ; i < size; i++) {
-			currentHash = (long) Math.pow(2, i) + encryptedAddress;
-			System.out.println(i + "   " + Long.toHexString(currentHash) 
-							+ "                  " +  fingerTable.get(i));
+			System.out.println(i + "   " + fingerTable.get(i).getIntervalUpperbound() 
+							+ "                  " +  fingerTable.get(i).getAddress());
 		}
 	}
 	
 	public static void initFingerHashMap(
 			HashMap<Integer,FingerObject> hmap, int upperbound,
-			FingerObject socketAddr) {
+			Long id) {
 		// upperbound 32: 0 to 31
 		/* fingerTable must be init because in this way we can use 
 		 * always "get" and "set" commands in the stabilize instead
 		 * of the "put", this allows to avoid the distiction between
 		 * the first and the others stabilize calls */
-		for(int i=0;i<upperbound;i++)
-			hmap.put(i, socketAddr);
+		Long auxHashValue;
+		for(int i=0;i<upperbound;i++) {
+			auxHashValue = (long) Math.pow(2, i) + id;
+			hmap.put(i, new FingerObject(null, auxHashValue));
+		}
 	}
-	
-	
-	
-	
 	
 	/*
 	public static void main(String[] args){
 		Node prova = new Node();
-		prova.setNodeAddr(new InetSocketAddress("127.0.0.1", 54));
-		HashMap<Integer, InetSocketAddress> finger = new HashMap<>();
-		prova.setFingerTable(finger);
-		finger.put(0, new InetSocketAddress("127.0.0.1", 54));
-		finger.put(1, new InetSocketAddress("127.0.0.1", 54));
-		finger.put(2, new InetSocketAddress("127.0.0.1", 54));
+		prova.currentIntervalUpperBound = (long) 46;
+		Utilities.initFingerHashMap(prova.getFingerTable(), 32, prova.currentIntervalUpperBound);
 		Utilities.displayFingerTable(prova);
 	}
 	*/

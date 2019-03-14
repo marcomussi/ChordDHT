@@ -1,8 +1,9 @@
 /Client.class
-/CreateNode.class
+/FingerObject.class
+/Listener.class
+/ManageRequest.class
 /Node.class
 /Stabilize.class
-/Listener.class
 /Utilities.class
-/ManageRequest.class
-/FingerObject.class
+/Request.class
+/Request/
