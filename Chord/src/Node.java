@@ -43,6 +43,7 @@ public class Node {
 		//SISTEMARE
 		Utilities.initFingerHashMap(fingerTable,32,currentIntervalUpperBound);
 		InetSocketAddress successorAddress = Node.requestToNode(connectionNode, new GetSuccessorRequest(currentIntervalUpperBound));
+		System.out.print("Checkpoint in join - joining node side");
 		fingerTable.put(0, new FingerObject(successorAddress, fingerTable.get(0).getIntervalUpperbound()));
 		this.lauchThreads();
 		this.choose();
@@ -58,10 +59,12 @@ public class Node {
 	private void lauchThreads() {
 		try {
 			listenerThread = new Listener(this);
+			listenerThread.start();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		stabilizerThread = new Stabilize(this);
+		stabilizerThread.start();
 		//PRED
 	}
 
@@ -141,14 +144,14 @@ public class Node {
 			output = socket.getOutputStream();
 			objectOutputStream = new ObjectOutputStream(output);
 			objectOutputStream.writeObject(request);
-			input = socket.getInputStream();
-			ObjectInputStream objectInputStream = new ObjectInputStream(input);
-			InetSocketAddress result = (InetSocketAddress) objectInputStream.readObject();
-			return result;
+			//input = socket.getInputStream();
+			//ObjectInputStream objectInputStream = new ObjectInputStream(input);
+			//InetSocketAddress result = (InetSocketAddress) objectInputStream.readObject();
+			//return result;
 		} catch (IOException e) {	
 			e.printStackTrace();
-		} catch (ClassNotFoundException e) {	
-			e.printStackTrace();
+		//} catch (ClassNotFoundException e) {	
+			//e.printStackTrace();
 		}
 		return null;		
 	}

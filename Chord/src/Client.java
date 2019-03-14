@@ -45,6 +45,9 @@ public class Client {
 				case "SEARCH" : // search in a node specified
 					Utilities.searchItem(); 
 					break;
+				case "EXIT" : // terminate the run
+					System.exit(1); // 1 -> good exit
+					break;
 				default : // if the command is different from the above the program ends
 					System.out.println("\nWrong Input!\n"); 
 					break;

@@ -13,12 +13,21 @@ public class Listener extends Thread {
 	}
 	
 	@Override
-	public void run() {	
+	public void run() {
+		System.out.println("Started listener\n" 
+				+ node.getNodeAddress() + "\n");
+		int i=0;
 		while (true) {
-			System.out.println("Started listener" + node.getNodeAddress());
 			Socket connection = null;
 			try {
 				connection = serverSocket.accept();
+				//if ((i%10)==0) {
+					System.out.println("Accepted connection " 
+							+ i++ + " from port " 
+							+ connection.getPort() 
+							+ " to server port " 
+							+ serverSocket.getLocalPort());
+				//}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

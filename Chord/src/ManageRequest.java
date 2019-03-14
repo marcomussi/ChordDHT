@@ -23,7 +23,6 @@ public class ManageRequest extends Thread{
 	
 	@Override
 	public void run() {
-		
 		try {
 			input = socket.getInputStream();
 			ObjectInputStream objectInputStream = new ObjectInputStream(input);
