@@ -52,6 +52,7 @@ public class Utilities {
 	
 	public static void initFingerHashMap(HashMap<Integer,InetSocketAddress> hmap, int upperbound,InetSocketAddress socketAddr) {
 		// upperbound not included
+		// upperbound 32: 0 to 31
 		for(int i=0;i<upperbound;i++)
 			hmap.put(i, socketAddr);
 	}
