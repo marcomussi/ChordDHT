@@ -7,33 +7,33 @@ public class Node {
 	
 	private InetSocketAddress nodeAddr;
 	private InetSocketAddress predecessorAddr;
+	private Long currentIntervalUpperBound;
 	
-	private HashMap<Integer, InetSocketAddress> fingerTable;
+	private HashMap<Integer, FingerObject> fingerTable;
 	private Scanner in;
 	private Listener listenerThread;
 	private Stabilize stabilizerThread;
 	
 	public Node () {
-		fingerTable = new HashMap<Integer, InetSocketAddress>();
-		/* fingerTable must be init because in this way we can use 
-		 * always "get" and "set" commands in the stabilize instead
-		 * of the "put", this allows to avoid the distiction between
-		 * the first and the others stabilize calls */
+		fingerTable = new HashMap<Integer, FingerObject>();
 		Utilities.initFingerHashMap(fingerTable,32,null);
 		predecessorAddr = null;
 	}
 	
-	public void newChord(InetSocketAddress thisNode) {
+	public void create(InetSocketAddress thisNode) {
 		// port choosen by user and ip of the device automatically catched
 		nodeAddr = thisNode;
+		currentIntervalUpperBound = Utilities.encryptString(this.nodeAddr.toString());
 		this.lauchThreads();
 		this.choose();
 	}
 	
-	public void joinNetwork(InetSocketAddress thisNode,InetSocketAddress connectionNode) {
+	public void join(InetSocketAddress thisNode,InetSocketAddress connectionNode) {
 		nodeAddr = thisNode;
+		currentIntervalUpperBound = Utilities.encryptString(this.nodeAddr.toString());
 		//request of the ID from by socket request
-		
+		//fingerTable.put(0, connectionNode);
+		//SISTEMARE
 		predecessorAddr = this.askTo(connectionNode);
 		this.lauchThreads();
 		this.choose();
@@ -90,15 +90,41 @@ public class Node {
 		return nodeAddr;
 	}
 
-	public HashMap<Integer, InetSocketAddress> getFingerTable() {
+	public HashMap<Integer, FingerObject> getFingerTable() {
 		return fingerTable;
 	}
 
-	public void setFingerTable(HashMap<Integer, InetSocketAddress> fingerTable) {
+	public void setFingerTable(HashMap<Integer, FingerObject> fingerTable) {
 		this.fingerTable = fingerTable;
 	}
 
+	public InetSocketAddress getSuccessorAddress() {
+		return fingerTable.get(0).getAddress();
+	}
 	
+	public Long getSuccessorIntervalUpperBound() {
+		return fingerTable.get(0).getIntervalUpperbound();
+	}
+	
+	public InetSocketAddress findSuccessor(Long id) {
+		if (id<currentIntervalUpperBound
+				&& id>=this.getSuccessorIntervalUpperBound()) {
+			return this.getSuccessorAddress();
+		}
+		InetSocketAddress auxNode = this.closestPrecedingNode(id);
+		//CONNESSIONE AD AUXNODE
+		return this.findSuccessor(id);
+	}
+
+	private InetSocketAddress closestPrecedingNode(Long id) {
+		for(int i=31;i>=0;i--) {
+			if(this.fingerTable.get(i).getIntervalUpperbound()>this.currentIntervalUpperBound 
+					&& this.fingerTable.get(i).getIntervalUpperbound()<id) {
+				fingerTable.get(i).getAddress();
+			}
+		}
+		return this.getNodeAddress();
+	}
 	
 
 }

@@ -29,7 +29,7 @@ public class Client {
 					System.out.println("Local Destination Port (IP is taken from the device): ");
 					localPort = Integer.parseInt(in.next());
 					x = new Node();
-					x.newChord(new InetSocketAddress(InetAddress.getLocalHost(),localPort)); } 
+					x.create(new InetSocketAddress(InetAddress.getLocalHost(),localPort)); } 
 					break;
 				case "JOIN" : { // add node to the network of the connect node
 					System.out.println("Local Destination Port (IP is taken from the device): ");
@@ -39,7 +39,7 @@ public class Client {
 					System.out.println("Port of the connection node: ");
 					connectPort = Integer.parseInt(in.next());
 					x = new Node();
-					x.joinNetwork(new InetSocketAddress(InetAddress.getLocalHost(),localPort),
+					x.join(new InetSocketAddress(InetAddress.getLocalHost(),localPort),
 												new InetSocketAddress(connectIP,connectPort)); } 
 					break;	
 				case "SEARCH" : // search in a node specified

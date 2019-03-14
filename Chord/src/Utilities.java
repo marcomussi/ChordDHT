@@ -7,11 +7,11 @@ import java.util.HashMap;
 
 public class Utilities {
 	// Method to calculate the SHA-1 of a given input string
-	public static String encryptString(String input) {
+	public static Long encryptString(String input) {
         try { 
             // getInstance() method is called with algorithm SHA-1 
             MessageDigest md = MessageDigest.getInstance("SHA-1"); 
-            // digest() method is called to calculate message digest of the input string 
+            // digest() method is called to calc message digest of the input string 
             // returned as array of byte 
             byte[] messageDigest = md.digest(input.getBytes()); 
             // Convert byte array into signum representation 
@@ -23,7 +23,7 @@ public class Utilities {
                 hashtext = "0" + hashtext; 
             } 
             // return the last 8 characters of the HashText 
-            return hashtext.substring(hashtext.length() - 8); 
+            return Long.parseLong(hashtext.substring(hashtext.length() - 8),16); 
         }
         // For specifying wrong message digest algorithms 
         catch (NoSuchAlgorithmException e) { 
@@ -37,22 +37,27 @@ public class Utilities {
 	}
 	
 	public static void displayFingerTable(Node inputNode){
-		String encryptedAddress = Utilities.encryptString(inputNode.getNodeAddress().toString());
-		Long encryptedAddressLong = Long.parseLong(encryptedAddress, 16);
-		HashMap<Integer, InetSocketAddress> fingerTable = inputNode.getFingerTable();
+		Long encryptedAddress = Utilities.encryptString(inputNode.
+				getNodeAddress().toString());
+		HashMap<Integer, FingerObject> fingerTable = inputNode.getFingerTable();
 		int size = fingerTable.size();
 		System.out.println("i   hash(current node) + 2^i   successor");
 		Long currentHash;
 		for(int i=0 ; i < size; i++) {
-			currentHash = (long) Math.pow(2, i) + encryptedAddressLong;
+			currentHash = (long) Math.pow(2, i) + encryptedAddress;
 			System.out.println(i + "   " + Long.toHexString(currentHash) 
 							+ "                  " +  fingerTable.get(i));
 		}
 	}
 	
-	public static void initFingerHashMap(HashMap<Integer,InetSocketAddress> hmap, int upperbound,InetSocketAddress socketAddr) {
-		// upperbound not included
+	public static void initFingerHashMap(
+			HashMap<Integer,FingerObject> hmap, int upperbound,
+			FingerObject socketAddr) {
 		// upperbound 32: 0 to 31
+		/* fingerTable must be init because in this way we can use 
+		 * always "get" and "set" commands in the stabilize instead
+		 * of the "put", this allows to avoid the distiction between
+		 * the first and the others stabilize calls */
 		for(int i=0;i<upperbound;i++)
 			hmap.put(i, socketAddr);
 	}
