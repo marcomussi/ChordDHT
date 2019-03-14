@@ -43,7 +43,7 @@ public class Client {
 												new InetSocketAddress(connectIP,connectPort)); } 
 					break;	
 				case "SEARCH" : // search in a node specified
-					//Utilities.searchItem(); 
+					Utilities.searchItem(); 
 					break;
 				default : // if the command is different from the above the program ends
 					System.out.println("\nWrong Input!\n"); 

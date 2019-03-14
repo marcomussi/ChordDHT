@@ -25,12 +25,13 @@ public class ManageRequest extends Thread{
 		try {
 			input = socket.getInputStream();
 			if (input != null) {
-				BufferedReader bufReader = new BufferedReader(new InputStreamReader(input));
+				BufferedReader bufReader = 
+						new BufferedReader(new InputStreamReader(input));
 				line = null;
 				try {
 					line = bufReader.readLine();
 				} catch (IOException e) {
-					System.out.println("Cannot read line from input stream.");
+					e.printStackTrace();
 					req = null;
 				}
 			}

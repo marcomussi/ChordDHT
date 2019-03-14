@@ -15,13 +15,18 @@ public class Node {
 	
 	public Node () {
 		fingerTable = new HashMap<Integer, InetSocketAddress>();
+		/* fingerTable must be init because in this way we can use 
+		 * always "get" and "set" commands in the stabilize instead
+		 * of the "put", this allows to avoid the distiction between
+		 * the first and the others stabilize calls */
+		Utilities.initFingerHashMap(fingerTable,32,null);
 		predecessorAddr = null;
 	}
 	
 	public void newChord(InetSocketAddress thisNode) {
 		// port choosen by user and ip of the device automatically catched
 		nodeAddr = thisNode;
-		this.initializeNode();
+		this.lauchThreads();
 		this.choose();
 	}
 	
@@ -30,19 +35,18 @@ public class Node {
 		//request of the ID from by socket request
 		
 		predecessorAddr = this.askTo(connectionNode);
-		this.initializeNode();
+		this.lauchThreads();
 		this.choose();
 	}
 	
 	private InetSocketAddress askTo(InetSocketAddress connectionNode) {
-		// TODO Auto-generated method stub
 		//send request and see response
 		//id is given by the hash of my address
 		// i must receive 
 		return null;
 	}
 
-	private void initializeNode() {
+	private void lauchThreads() {
 		try {
 			listenerThread = new Listener(this);
 		} catch (IOException e) {
@@ -94,5 +98,7 @@ public class Node {
 		this.fingerTable = fingerTable;
 	}
 
+	
+	
 
 }
