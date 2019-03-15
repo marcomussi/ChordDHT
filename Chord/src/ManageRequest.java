@@ -39,6 +39,7 @@ public class ManageRequest extends Thread{
 		ObjectOutputStream objectOutputStream;
 		if(request instanceof GetSuccessorRequest)
 		{
+			System.out.println("Sto cercando il successore di questo ID: " + ((GetSuccessorRequest) request).getId());
 			InetSocketAddress response = node.findSuccessor(((GetSuccessorRequest) request).getId());
 			try {
 				System.out.println("SONO NEL TRY CATCH WOOOO");

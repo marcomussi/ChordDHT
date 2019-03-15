@@ -46,28 +46,4 @@ public class Utilities {
 		}
 	}
 	
-	public static void initFingerHashMap(
-			HashMap<Integer,FingerObject> hmap, int upperbound,
-			Long id) {
-		// upperbound 32: 0 to 31
-		/* fingerTable must be init because in this way we can use 
-		 * always "get" and "set" commands in the stabilize instead
-		 * of the "put", this allows to avoid the distiction between
-		 * the first and the others stabilize calls */
-		Long auxHashValue;
-		for(int i=0;i<upperbound;i++) {
-			auxHashValue = (long) Math.pow(2, i) + id;
-			hmap.put(i, new FingerObject(null, auxHashValue));
-		}
-	}
-	
-	/*
-	public static void main(String[] args){
-		Node prova = new Node();
-		prova.currentIntervalUpperBound = (long) 46;
-		Utilities.initFingerHashMap(prova.getFingerTable(), 32, prova.currentIntervalUpperBound);
-		Utilities.displayFingerTable(prova);
-	}
-	*/
-	
 }

@@ -30,21 +30,20 @@ public class Node {
 		// port choosen by user and ip of the device automatically catched
 		nodeAddr = thisNode;
 		currentIntervalUpperBound = Utilities.encryptString(this.nodeAddr.toString());
-		Utilities.initFingerHashMap(fingerTable,32,currentIntervalUpperBound);
+		initFingerHashMap();
 		this.lauchThreads();
 		this.choose();
 	}
 	
 	public void join(InetSocketAddress thisNode,InetSocketAddress connectionNode) {
 		nodeAddr = thisNode;
-		currentIntervalUpperBound = Utilities.encryptString(this.nodeAddr.toString());
 		//request of the ID from by socket request
 		//fingerTable.put(0, connectionNode);
 		//SISTEMARE
-		Utilities.initFingerHashMap(fingerTable,32,currentIntervalUpperBound);
+		initFingerHashMap();
 		InetSocketAddress successorAddress = Node.requestToNode(connectionNode, new GetSuccessorRequest(currentIntervalUpperBound));
 		System.out.print("Checkpoint in join - joining node side");
-		fingerTable.put(0, new FingerObject(successorAddress, fingerTable.get(0).getIntervalUpperbound()));
+		fingerTable.get(0).setAddress(successorAddress);
 		this.lauchThreads();
 		this.choose();
 	}
@@ -114,12 +113,27 @@ public class Node {
 		return fingerTable.get(0).getIntervalUpperbound();
 	}
 	
+	public void initFingerHashMap() {
+		/* fingerTable must be init because in this way we can use 
+		 * always "get" and "set" commands in the stabilize instead
+		 * of the "put", this allows to avoid the distiction between
+		 * the first and the others stabilize calls */
+		Long auxHashValue;
+		currentIntervalUpperBound = Utilities.encryptString(nodeAddr.toString());
+		for(int i=0;i<32;i++) {
+			auxHashValue = (long) Math.pow(2, i) + currentIntervalUpperBound;
+			this.getFingerTable().put(i, new FingerObject(null, auxHashValue));
+		}
+	}
 	public InetSocketAddress findSuccessor(Long id) {
-		if (id<currentIntervalUpperBound
-				&& id>=this.getSuccessorIntervalUpperBound()) {
+		if (id>currentIntervalUpperBound
+				&& id<=this.getSuccessorIntervalUpperBound()) {
 			return this.getSuccessorAddress();
 		}
 		InetSocketAddress auxNode = this.closestPrecedingNode(id);
+		if (auxNode==this.getNodeAddress()) // Base case, in order to block deadlock
+			return this.getNodeAddress();
+		// If another node is found, then send the request to it
 		GetSuccessorRequest getSuccessorRequest = new GetSuccessorRequest(id);
 		return requestToNode(auxNode, getSuccessorRequest);
 	}
