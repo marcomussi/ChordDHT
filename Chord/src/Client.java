@@ -5,12 +5,14 @@ import java.util.Scanner;
 
 public class Client {
 
+	private static Scanner in;
+
 	public static void main(String[] args) throws UnknownHostException {
 	
 		int localPort, connectPort;
 		String connectIP, searchStr;
 		Node x;
-		Scanner in;
+		in = new Scanner(System.in);
 		
 		/* while true loop is only to avoid the termination of the program
 		 * in case of wrong command, in case of a correct one the execution
@@ -21,7 +23,6 @@ public class Client {
 				+ "CREATE\n"
 				+ "JOIN\n"
 				+ "SEARCH\n");
-			in = new Scanner(System.in);
 			String operation = in.next().toUpperCase();
 			
 			switch(operation) {

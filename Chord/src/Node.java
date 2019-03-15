@@ -14,7 +14,7 @@ public class Node {
 	
 	private InetSocketAddress nodeAddr;
 	private InetSocketAddress predecessorAddr;
-	public Long currentIntervalUpperBound;
+	private Long currentIntervalUpperBound;
 	
 	private HashMap<Integer, FingerObject> fingerTable;
 	private Scanner in;
@@ -90,6 +90,10 @@ public class Node {
 		return nodeAddr;
 	}
 
+	public Long getNodeUpperBound() {
+		return this.currentIntervalUpperBound;
+	}
+	
 	public HashMap<Integer, FingerObject> getFingerTable() {
 		return fingerTable;
 	}

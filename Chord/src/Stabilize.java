@@ -8,8 +8,14 @@ public class Stabilize extends Thread {
 	
 	@Override
 	public void run() {
+		int sleepTimeMillis = 5000;
 		while(true) {
-		
+			
+			try {
+				Thread.sleep(sleepTimeMillis);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			};
 		}
 	}
 }

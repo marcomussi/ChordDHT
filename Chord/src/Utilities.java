@@ -30,18 +30,22 @@ public class Utilities {
         }
 	}
 	
+	public static String longToHexString(long l) {
+		return Long.toHexString(l);
+	}
+	
 	public static void searchItem(InetSocketAddress socketAddr, Long key) {
 		
-		// method in the main menu part will be developed here here
 	}
 	
 	public static void displayFingerTable(Node inputNode){
 		HashMap<Integer, FingerObject> fingerTable = inputNode.getFingerTable();
 		int size = fingerTable.size();
-		System.out.println("i   hash(current node) + 2^i   successor");
+		System.out.println("i\tHashCurrentNode+2^i\tsuccessor");
 		for(int i=0 ; i < size; i++) {
-			System.out.println(i + "   " + fingerTable.get(i).getIntervalUpperbound() 
-							+ "                  " +  fingerTable.get(i).getAddress());
+			System.out.println(i + "\t" 
+					+ Utilities.longToHexString(fingerTable.get(i).getIntervalUpperbound()) 
+					+ "\t\t\t" +  fingerTable.get(i).getAddress());
 		}
 	}
 	
