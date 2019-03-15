@@ -1,5 +1,4 @@
 import java.math.BigInteger;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.security.MessageDigest; 
 import java.security.NoSuchAlgorithmException;
@@ -31,8 +30,8 @@ public class Utilities {
         }
 	}
 	
-	public static void searchItem() {
-		// TODO Auto-generated method stub
+	public static void searchItem(InetSocketAddress socketAddr, Long key) {
+		
 		// method in the main menu part will be developed here here
 	}
 	

@@ -47,13 +47,6 @@ public class Node {
 		this.lauchThreads();
 		this.choose();
 	}
-	
-	private InetSocketAddress askTo(InetSocketAddress connectionNode) {
-		//send request and see response
-		//id is given by the hash of my address
-		// i must receive 
-		return null;
-	}
 
 	private void lauchThreads() {
 		try {

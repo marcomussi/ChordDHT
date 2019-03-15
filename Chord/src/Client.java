@@ -8,7 +8,7 @@ public class Client {
 	public static void main(String[] args) throws UnknownHostException {
 	
 		int localPort, connectPort;
-		String connectIP;
+		String connectIP, searchStr;
 		Node x;
 		Scanner in;
 		
@@ -42,8 +42,17 @@ public class Client {
 					x.join(new InetSocketAddress(InetAddress.getLocalHost(),localPort),
 												new InetSocketAddress(connectIP,connectPort)); } 
 					break;	
-				case "SEARCH" : // search in a node specified
-					Utilities.searchItem(); 
+				case "SEARCH" : { // search in a node specified
+					System.out.println("IP of the node to start search: ");
+					connectIP = in.next();
+					System.out.println("Port of the search node: ");
+					connectPort = Integer.parseInt(in.next());
+					System.out.println("Search string: ");
+					searchStr = in.next();
+					Utilities.searchItem(new InetSocketAddress(connectIP,connectPort),
+							Utilities.encryptString(searchStr));
+				
+				}
 					break;
 				case "EXIT" : // terminate the run
 					System.exit(1); // 1 -> good exit

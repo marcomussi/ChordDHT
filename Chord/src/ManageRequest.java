@@ -15,7 +15,6 @@ public class ManageRequest extends Thread{
 	private InputStream input;
 	private OutputStream output;
 
-
 	public ManageRequest(Node n,Socket s) {
 		this.node = n;
 		this.socket = s;
@@ -37,12 +36,11 @@ public class ManageRequest extends Thread{
 
 	private String process(Object request) {
 		ObjectOutputStream objectOutputStream;
-		if(request instanceof GetSuccessorRequest)
-		{
+		if(request instanceof GetSuccessorRequest) {
 			System.out.println("Sto cercando il successore di questo ID: " + ((GetSuccessorRequest) request).getId());
 			InetSocketAddress response = node.findSuccessor(((GetSuccessorRequest) request).getId());
 			try {
-				System.out.println("SONO NEL TRY CATCH WOOOO");
+				System.out.println("SONO NEL TRY CATCH WOOOO"); // grandi emozioni per lui
 				output = socket.getOutputStream();
 				objectOutputStream = new ObjectOutputStream(output);
 				objectOutputStream.writeObject(response);
