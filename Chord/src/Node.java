@@ -144,7 +144,7 @@ public class Node {
 		for(int i=31;i>=0;i--) {
 			if(this.fingerTable.get(i).getIntervalUpperbound()>this.currentIntervalUpperBound 
 					&& this.fingerTable.get(i).getIntervalUpperbound()<id) {
-				fingerTable.get(i).getAddress();
+				return fingerTable.get(i).getAddress();
 			}
 		}
 		return this.getNodeAddress();
