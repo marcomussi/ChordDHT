@@ -49,16 +49,17 @@ public class Utilities {
 	public static void displayFingerTable(Node inputNode){
 		HashMap<Integer, FingerObject> fingerTable = inputNode.getFingerTable();
 		int size = fingerTable.size();
+		System.out.println("Displaying finger table for node: " + longToHexString(inputNode.getNodeUpperBound()));
 		System.out.println("i\tHashCurrentNode+2^i\tsuccessor");
 		for(int i=0 ; i < size; i++) {
 			System.out.println(i + "\t" 
-					+ Utilities.longToHexString(fingerTable.get(i).getIntervalUpperbound()) 
+					+ longToHexString(fingerTable.get(i).getIntervalUpperbound()) 
 					+ "\t\t\t" +  fingerTable.get(i).getAddress());
 		}
 	}
 	
 	public static InetSocketAddress requestToNode(InetSocketAddress destination, Request request){
-		System.out.println("RequestToNode invocata");
+		//System.out.println("RequestToNode invocata");
 		Socket socket;
 		OutputStream output;
 		InputStream input;

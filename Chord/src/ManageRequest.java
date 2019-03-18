@@ -47,6 +47,7 @@ public class ManageRequest extends Thread{
 			response = node.getPredecessorAddr();
 		}
 		if(request instanceof NotifyRequest) {
+			System.out.println("Sono il nodo " + node.getNodeAddress() + " e ho ricevuto una richiesta di notify");
 			InetSocketAddress sourceAddress = ((NotifyRequest) request).getAddress();
 			Long sourceAddressIntervalUpperBound = Utilities.encryptString(sourceAddress.toString());
 			if (node.getPredecessorAddr() == null

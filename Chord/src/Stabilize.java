@@ -40,7 +40,8 @@ public class Stabilize extends Thread {
 				}
 				//TODO: Verificare se notify fatta così potrebbe generare risultati 
 				// strani in quanto non è sincronizzata con niente
-				InetSocketAddress result = Utilities.requestToNode(node.getSuccessorAddress(), new NotifyRequest(node.getNodeAddress()));
+				//if (node.getSuccessorAddress() != node.getNodeAddress())
+			    Utilities.requestToNode(node.getSuccessorAddress(), new NotifyRequest(node.getNodeAddress()));
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			};

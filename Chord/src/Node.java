@@ -14,6 +14,7 @@ public class Node {
 	private Scanner in;
 	private Listener listenerThread;
 	private Stabilize stabilizerThread;
+	private FixFingers fixFingersThread;
 	
 	public Node () {
 		fingerTable = new HashMap<Integer, FingerObject>();
@@ -25,6 +26,7 @@ public class Node {
 		nodeAddr = thisNode;
 		initFingerHashMap();
 		predecessorAddr = null;
+		fingerTable.get(0).setAddress(this.getNodeAddress());
 		this.lauchThreads();
 		this.choose();
 	}
@@ -46,6 +48,9 @@ public class Node {
 
 			stabilizerThread = new Stabilize(this);
 			stabilizerThread.start();
+			
+			fixFingersThread = new FixFingers(this);
+			fixFingersThread.start();
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -118,7 +123,7 @@ public class Node {
 		Long auxHashValue;
 		currentIntervalUpperBound = Utilities.encryptString(nodeAddr.toString());
 		for(int i=0;i<32;i++) {
-			auxHashValue = (long) Math.pow(2, i) + currentIntervalUpperBound;
+			auxHashValue = (long) (Math.pow(2, i) % Math.pow(2, 32)) + currentIntervalUpperBound;
 			this.getFingerTable().put(i, new FingerObject(null, auxHashValue));
 		}
 	}
