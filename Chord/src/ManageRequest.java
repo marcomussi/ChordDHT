@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
+import Request.GetPredecessorRequest;
 import Request.GetSuccessorRequest;
 
 public class ManageRequest extends Thread{
@@ -36,17 +37,20 @@ public class ManageRequest extends Thread{
 
 	private String process(Object request) {
 		ObjectOutputStream objectOutputStream;
+		InetSocketAddress response = null;
 		if(request instanceof GetSuccessorRequest) {
-			System.out.println("Sto cercando il successore di questo ID: " + ((GetSuccessorRequest) request).getId());
-			InetSocketAddress response = node.findSuccessor(((GetSuccessorRequest) request).getId());
-			try {
-				System.out.println("SONO NEL TRY CATCH WOOOO"); // grandi emozioni per lui
-				output = socket.getOutputStream();
-				objectOutputStream = new ObjectOutputStream(output);
-				objectOutputStream.writeObject(response);
-			} catch (IOException e) {	
-				e.printStackTrace();
-			}
+			//System.out.println("Sto cercando il successore di questo ID: " + ((GetSuccessorRequest) request).getId());
+			response = node.findSuccessor(((GetSuccessorRequest) request).getId());
+		}
+		if(request instanceof GetPredecessorRequest) {
+			response = node.getPredecessorAddr();
+		}
+		try {
+			output = socket.getOutputStream();
+			objectOutputStream = new ObjectOutputStream(output);
+			objectOutputStream.writeObject(response);
+		} catch (IOException e) {	
+			e.printStackTrace();
 		}
 		return null;
 	}

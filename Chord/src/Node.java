@@ -1,14 +1,8 @@
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import java.net.Socket;
 import java.util.HashMap;
 import java.util.Scanner;
 import Request.GetSuccessorRequest;
-import Request.Request;
 
 public class Node {
 	
@@ -23,26 +17,23 @@ public class Node {
 	
 	public Node () {
 		fingerTable = new HashMap<Integer, FingerObject>();
-		predecessorAddr = null;
+		setPredecessorAddr(null);
 	}
 	
 	public void create(InetSocketAddress thisNode) {
 		// port choosen by user and ip of the device automatically catched
 		nodeAddr = thisNode;
-		currentIntervalUpperBound = Utilities.encryptString(this.nodeAddr.toString());
 		initFingerHashMap();
+		predecessorAddr = null;
 		this.lauchThreads();
 		this.choose();
 	}
 	
 	public void join(InetSocketAddress thisNode,InetSocketAddress connectionNode) {
 		nodeAddr = thisNode;
-		//request of the ID from by socket request
-		//fingerTable.put(0, connectionNode);
-		//SISTEMARE
 		initFingerHashMap();
-		InetSocketAddress successorAddress = Node.requestToNode(connectionNode, new GetSuccessorRequest(currentIntervalUpperBound));
-		System.out.print("Checkpoint in join - joining node side");
+		predecessorAddr = null;
+		InetSocketAddress successorAddress = Utilities.requestToNode(connectionNode, new GetSuccessorRequest(currentIntervalUpperBound));
 		fingerTable.get(0).setAddress(successorAddress);
 		this.lauchThreads();
 		this.choose();
@@ -52,11 +43,13 @@ public class Node {
 		try {
 			listenerThread = new Listener(this);
 			listenerThread.start();
+
+			stabilizerThread = new Stabilize(this);
+			stabilizerThread.start();
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		stabilizerThread = new Stabilize(this);
-		stabilizerThread.start();
 		//PRED
 	}
 
@@ -110,6 +103,13 @@ public class Node {
 		return fingerTable.get(0).getIntervalUpperbound();
 	}
 	
+	public InetSocketAddress getPredecessorAddr() {
+		return predecessorAddr;
+	}
+
+	public void setPredecessorAddr(InetSocketAddress predecessorAddr) {
+		this.predecessorAddr = predecessorAddr;
+	}
 	public void initFingerHashMap() {
 		/* fingerTable must be init because in this way we can use 
 		 * always "get" and "set" commands in the stabilize instead
@@ -132,11 +132,10 @@ public class Node {
 			return this.getNodeAddress();
 		// If another node is found, then send the request to it
 		GetSuccessorRequest getSuccessorRequest = new GetSuccessorRequest(id);
-		return requestToNode(auxNode, getSuccessorRequest);
+		return Utilities.requestToNode(auxNode, getSuccessorRequest);
 	}
 
 	private InetSocketAddress closestPrecedingNode(Long id) {
-		System.out.print("ClosestPreceding chiamata");
 		for(int i=31;i>=0;i--) {
 			if(this.fingerTable.get(i).getIntervalUpperbound()>this.currentIntervalUpperBound 
 					&& this.fingerTable.get(i).getIntervalUpperbound()<id) {
@@ -146,26 +145,4 @@ public class Node {
 		return this.getNodeAddress();
 	}
 
-	private static InetSocketAddress requestToNode(InetSocketAddress destination, Request request){
-		System.out.println("RequestToNode invocata");
-		Socket socket;
-		OutputStream output;
-		InputStream input;
-		ObjectOutputStream objectOutputStream;
-		try {
-			socket = new Socket(destination.getAddress(), destination.getPort());
-			output = socket.getOutputStream();
-			objectOutputStream = new ObjectOutputStream(output);
-			objectOutputStream.writeObject(request);
-			input = socket.getInputStream();
-			ObjectInputStream objectInputStream = new ObjectInputStream(input);
-			InetSocketAddress result = (InetSocketAddress) objectInputStream.readObject();
-			return result;
-		} catch (IOException e) {	
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {	
-			e.printStackTrace();
-		}
-		return null;		
-	}
 }

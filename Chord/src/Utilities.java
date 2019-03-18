@@ -1,8 +1,16 @@
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.security.MessageDigest; 
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap; 
+import java.util.HashMap;
+
+import Request.Request; 
 
 public class Utilities {
 	// Method to calculate the SHA-1 of a given input string
@@ -49,4 +57,27 @@ public class Utilities {
 		}
 	}
 	
+	public static InetSocketAddress requestToNode(InetSocketAddress destination, Request request){
+		System.out.println("RequestToNode invocata");
+		Socket socket;
+		OutputStream output;
+		InputStream input;
+		ObjectOutputStream objectOutputStream;
+		try {
+			socket = new Socket(destination.getAddress(), destination.getPort());
+			output = socket.getOutputStream();
+			objectOutputStream = new ObjectOutputStream(output);
+			objectOutputStream.writeObject(request);
+			input = socket.getInputStream();
+			ObjectInputStream objectInputStream = new ObjectInputStream(input);
+			InetSocketAddress result = (InetSocketAddress) objectInputStream.readObject();
+			return result;
+		} catch (IOException e) {	
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {	
+			e.printStackTrace();
+		}
+		return null;		
+	}
+
 }

@@ -21,13 +21,11 @@ public class Listener extends Thread {
 			Socket connection = null;
 			try {
 				connection = serverSocket.accept();
-				//if ((i%10)==0) {
-					System.out.println("Accepted connection " 
-							+ i++ + " from port " 
-							+ connection.getPort() 
-							+ " to server port " 
-							+ serverSocket.getLocalPort());
-				//}
+				System.out.println("Accepted connection " 
+						+ i++ + " from port " 
+						+ connection.getPort() 
+						+ " to server port " 
+						+ serverSocket.getLocalPort());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
