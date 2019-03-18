@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 import Request.GetPredecessorRequest;
+import Request.NotifyRequest;
 
 public class Stabilize extends Thread {
 	
@@ -18,6 +19,7 @@ public class Stabilize extends Thread {
 		int sleepTimeMillis = 5000;
 		while(true) {
 			try {
+				System.out.println("My predecessor is " + node.getPredecessorAddr());
 				Thread.sleep(sleepTimeMillis);
 				// Get the node successor
 				InetSocketAddress nodeSucc = node.getSuccessorAddress();
@@ -36,8 +38,9 @@ public class Stabilize extends Thread {
 						// If the check is true, then successor = x;
 						node.getFingerTable().get(0).setAddress(nodeSuccPredecessor);
 				}
-				// TODO: Chiamata a Notify
-					
+				//TODO: Verificare se notify fatta così potrebbe generare risultati 
+				// strani in quanto non è sincronizzata con niente
+				InetSocketAddress result = Utilities.requestToNode(node.getSuccessorAddress(), new NotifyRequest(node.getNodeAddress()));
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			};

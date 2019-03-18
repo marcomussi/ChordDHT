@@ -8,6 +8,7 @@ import java.net.Socket;
 
 import Request.GetPredecessorRequest;
 import Request.GetSuccessorRequest;
+import Request.NotifyRequest;
 
 public class ManageRequest extends Thread{
 
@@ -45,6 +46,14 @@ public class ManageRequest extends Thread{
 		if(request instanceof GetPredecessorRequest) {
 			response = node.getPredecessorAddr();
 		}
+		if(request instanceof NotifyRequest) {
+			InetSocketAddress sourceAddress = ((NotifyRequest) request).getAddress();
+			Long sourceAddressIntervalUpperBound = Utilities.encryptString(sourceAddress.toString());
+			if (node.getPredecessorAddr() == null
+					|| sourceAddressIntervalUpperBound > Utilities.encryptString(node.getPredecessorAddr().toString())
+					|| sourceAddressIntervalUpperBound < node.getNodeUpperBound())
+				node.setPredecessorAddr(sourceAddress);
+			}
 		try {
 			output = socket.getOutputStream();
 			objectOutputStream = new ObjectOutputStream(output);
@@ -54,4 +63,5 @@ public class ManageRequest extends Thread{
 		}
 		return null;
 	}
+	
 }
