@@ -16,7 +16,7 @@ public class Stabilize extends Thread {
 	public void run() {
 		System.out.println("Started stabilize process\n" 
 				+ node.getNodeAddress() + "\n");
-		int sleepTimeMillis = 5000;
+		int sleepTimeMillis = 2000;
 		while(true) {
 			try {
 				System.out.println("My predecessor is " + node.getPredecessorAddr());
@@ -30,14 +30,17 @@ public class Stabilize extends Thread {
 				InetSocketAddress nodeSuccPredecessor = Utilities.requestToNode(nodeSucc, new GetPredecessorRequest());
 				// If it's null, hash it in order to obtain its interval upper bound
 				Long nodeSuccPredecessorIntervalUpperBound;
-				if (nodeSuccPredecessor!=null) {
-					nodeSuccPredecessorIntervalUpperBound = Utilities.encryptString(nodeSuccPredecessor.toString());
-					//check if (x € (n, successor)), the check is done only if the successor's predecessor is not null
-					if (nodeSuccPredecessorIntervalUpperBound > node.getNodeUpperBound() 
-							&& nodeSuccPredecessorIntervalUpperBound < node.getSuccessorIntervalUpperBound())
-						// If the check is true, then successor = x;
+				if (nodeSuccPredecessor!=null)
+					// Se sono il successore di me stesso e ricevo una notify, aggiorno il mio successore con quello ricevuto
+					if (node.getSuccessorAddress()==node.getNodeAddress()) 
 						node.getFingerTable().get(0).setAddress(nodeSuccPredecessor);
-				}
+					// Se ho ottenuto una notify con x € (n , successor) 
+					else {
+						nodeSuccPredecessorIntervalUpperBound = Utilities.encryptString(nodeSuccPredecessor.toString());
+						if ((nodeSuccPredecessorIntervalUpperBound > node.getNodeUpperBound() 
+						&& nodeSuccPredecessorIntervalUpperBound < node.getSuccessorIntervalUpperBound()))
+							node.getFingerTable().get(0).setAddress(nodeSuccPredecessor);
+					}
 				//TODO: Verificare se notify fatta così potrebbe generare risultati 
 				// strani in quanto non è sincronizzata con niente
 				if (node.getSuccessorAddress() != node.getNodeAddress())
