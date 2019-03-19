@@ -28,9 +28,8 @@ public class Stabilize extends Thread {
 					continue;
 				// Get the node successor's predecessor (=x)
 				InetSocketAddress nodeSuccPredecessor = Utilities.requestToNode(nodeSucc, new GetPredecessorRequest());
-				// If it's null, hash it in order to obtain its interval upper bound
 				Long nodeSuccPredecessorIntervalUpperBound;
-				if (nodeSuccPredecessor!=null)
+				if (nodeSuccPredecessor!=null) {
 					// Se sono il successore di me stesso e ricevo una notify, aggiorno il mio successore con quello ricevuto
 					if (node.getSuccessorAddress()==node.getNodeAddress()) 
 						node.getFingerTable().get(0).setAddress(nodeSuccPredecessor);
@@ -49,6 +48,7 @@ public class Stabilize extends Thread {
 								node.getFingerTable().get(0).setAddress(nodeSuccPredecessor);
 							}
 					}
+				}
 				//TODO: Verificare se notify fatta così potrebbe generare risultati 
 				// strani in quanto non è sincronizzata con niente
 				if (node.getSuccessorAddress() != node.getNodeAddress())

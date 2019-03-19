@@ -159,7 +159,7 @@ public class Node {
 	private InetSocketAddress closestPrecedingNode(Long id) {
 		Long fingerEntry = 0L;
 		for(int i=31;i>=0;i--) {
-			if(this.getFingerTable().get(i).getAddress() != null)
+			if(this.getFingerTable().get(i).getAddress() != null) {
 				fingerEntry = Utilities.encryptString(this.fingerTable.get(i).getAddress().toString());
 				if (currentIntervalUpperBound<id) {	
 					if(fingerEntry>currentIntervalUpperBound && fingerEntry<id) 
@@ -169,6 +169,7 @@ public class Node {
 					if (fingerEntry>currentIntervalUpperBound || fingerEntry < id)
 						return fingerTable.get(i).getAddress();
 			}
+		}
 		return this.getNodeAddress();
 	}
 	
