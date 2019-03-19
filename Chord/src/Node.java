@@ -129,7 +129,9 @@ public class Node {
 	}
 	public InetSocketAddress findSuccessor(Long id) {
 		if (id>currentIntervalUpperBound
-				&& id<=this.getSuccessorIntervalUpperBound()) {
+				&& id<=this.getSuccessorIntervalUpperBound()) { 
+		// Fatta così dovrebbe gestire correttamente anche il modulo:
+		//if (id <= ((Utilities.encryptString(getSuccessorAddress().toString()) + currentIntervalUpperBound) % (long) Math.pow(2, 32)) )
 			return this.getSuccessorAddress();
 		}
 		InetSocketAddress auxNode = this.closestPrecedingNode(id);
@@ -142,8 +144,9 @@ public class Node {
 
 	private InetSocketAddress closestPrecedingNode(Long id) {
 		for(int i=31;i>=0;i--) {
-			if(this.fingerTable.get(i).getIntervalUpperbound()>this.currentIntervalUpperBound 
-					&& this.fingerTable.get(i).getIntervalUpperbound()<id) {
+			if(this.getFingerTable().get(i).getAddress() != null 
+					&& Utilities.encryptString(this.fingerTable.get(i).getAddress().toString())>this.currentIntervalUpperBound 
+					&& (Utilities.encryptString(this.fingerTable.get(i).getAddress().toString()))<id) {
 				return fingerTable.get(i).getAddress();
 			}
 		}
