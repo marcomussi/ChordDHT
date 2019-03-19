@@ -123,7 +123,7 @@ public class Node {
 		Long auxHashValue;
 		currentIntervalUpperBound = Utilities.encryptString(nodeAddr.toString());
 		for(int i=0;i<32;i++) {
-			auxHashValue = (long) (Math.pow(2, i) % Math.pow(2, 32)) + currentIntervalUpperBound;
+			auxHashValue = ((long) Math.pow(2, i) + currentIntervalUpperBound) % (long) Math.pow(2, 32);
 			this.getFingerTable().put(i, new FingerObject(null, auxHashValue));
 		}
 	}
@@ -157,14 +157,18 @@ public class Node {
 	}
 
 	private InetSocketAddress closestPrecedingNode(Long id) {
+		Long fingerEntry = 0L;
 		for(int i=31;i>=0;i--) {
-			System.out.println("Sono nel closest!");
-			if(this.getFingerTable().get(i).getAddress() != null 
-					&& Utilities.encryptString(this.fingerTable.get(i).getAddress().toString())>this.currentIntervalUpperBound 
-					&& (Utilities.encryptString(this.fingerTable.get(i).getAddress().toString()))<id) {
-				return fingerTable.get(i).getAddress();
+			if(this.getFingerTable().get(i).getAddress() != null)
+				fingerEntry = Utilities.encryptString(this.fingerTable.get(i).getAddress().toString());
+				if (currentIntervalUpperBound<id) {	
+					if(fingerEntry>currentIntervalUpperBound && fingerEntry<id) 
+						return fingerTable.get(i).getAddress();
+				}
+				else
+					if (fingerEntry>currentIntervalUpperBound || fingerEntry < id)
+						return fingerTable.get(i).getAddress();
 			}
-		}
 		return this.getNodeAddress();
 	}
 	

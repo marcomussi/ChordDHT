@@ -16,7 +16,7 @@ public class Stabilize extends Thread {
 	public void run() {
 		System.out.println("Started stabilize process\n" 
 				+ node.getNodeAddress() + "\n");
-		int sleepTimeMillis = 5000;
+		int sleepTimeMillis = 500;
 		while(true) {
 			try {
 				System.out.println("My predecessor is " + node.getPredecessorAddr());
@@ -37,9 +37,17 @@ public class Stabilize extends Thread {
 					// Se ho ottenuto una notify con x � (n , successor) 
 					else {
 						nodeSuccPredecessorIntervalUpperBound = Utilities.encryptString(nodeSuccPredecessor.toString());
-						if ((nodeSuccPredecessorIntervalUpperBound > node.getNodeUpperBound() 
-						&& nodeSuccPredecessorIntervalUpperBound < node.getSuccessorIntervalUpperBound()))
-							node.getFingerTable().get(0).setAddress(nodeSuccPredecessor);
+						if (node.getNodeUpperBound() < Utilities.encryptString(node.getSuccessorAddress().toString())) {
+							if ((nodeSuccPredecessorIntervalUpperBound > node.getNodeUpperBound() 
+							&& nodeSuccPredecessorIntervalUpperBound < Utilities.encryptString(node.getSuccessorAddress().toString()))) {
+								node.getFingerTable().get(0).setAddress(nodeSuccPredecessor);
+							}
+						}
+						else
+							if (nodeSuccPredecessorIntervalUpperBound > node.getNodeUpperBound()
+									|| nodeSuccPredecessorIntervalUpperBound < node.getNodeUpperBound()) {
+								node.getFingerTable().get(0).setAddress(nodeSuccPredecessor);
+							}
 					}
 				//TODO: Verificare se notify fatta così potrebbe generare risultati 
 				// strani in quanto non è sincronizzata con niente

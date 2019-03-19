@@ -50,11 +50,19 @@ public class ManageRequest extends Thread{
 			System.out.println("Sono il nodo " + node.getNodeAddress() + " e ho ricevuto una richiesta di notify");
 			InetSocketAddress sourceAddress = ((NotifyRequest) request).getAddress();
 			Long sourceAddressIntervalUpperBound = Utilities.encryptString(sourceAddress.toString());
-			if (node.getPredecessorAddr() == null
-					|| sourceAddressIntervalUpperBound > Utilities.encryptString(node.getPredecessorAddr().toString())
-					|| sourceAddressIntervalUpperBound < node.getNodeUpperBound())
+			if (Utilities.encryptString(node.getPredecessorAddr().toString()) < node.getNodeUpperBound()) {
+				if (node.getPredecessorAddr() == null
+							|| (sourceAddressIntervalUpperBound > Utilities.encryptString(node.getPredecessorAddr().toString())
+							&& sourceAddressIntervalUpperBound < node.getNodeUpperBound()))
+					node.setPredecessorAddr(sourceAddress);
+			}
+			else {
+				if (node.getPredecessorAddr() == null
+						|| (sourceAddressIntervalUpperBound > Utilities.encryptString(node.getPredecessorAddr().toString())
+						|| sourceAddressIntervalUpperBound < node.getNodeUpperBound()))
 				node.setPredecessorAddr(sourceAddress);
 			}
+		}
 		try {
 			output = socket.getOutputStream();
 			objectOutputStream = new ObjectOutputStream(output);
