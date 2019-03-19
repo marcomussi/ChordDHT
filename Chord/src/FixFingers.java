@@ -16,7 +16,7 @@ public class FixFingers extends Thread {
 	public void run() {
 		System.out.println("Started fix fingers process\n" 
 				+ node.getNodeAddress() + "\n");
-		int sleepTimeMillis = 2000;
+		int sleepTimeMillis = 5000;
 		while(true) {
 			try {
 				for (int next = 0; next<32; next++) {

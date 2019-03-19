@@ -127,23 +127,38 @@ public class Node {
 			this.getFingerTable().put(i, new FingerObject(null, auxHashValue));
 		}
 	}
-	public InetSocketAddress findSuccessor(Long id) {
-		if (id>currentIntervalUpperBound
-				&& id<=this.getSuccessorIntervalUpperBound()) { 
-		// Fatta così dovrebbe gestire correttamente anche il modulo:
-		//if (id <= ((Utilities.encryptString(getSuccessorAddress().toString()) + currentIntervalUpperBound) % (long) Math.pow(2, 32)) )
-			return this.getSuccessorAddress();
+	public InetSocketAddress findSuccessor(Long id) {	
+		if (this.getNodeUpperBound() < Utilities.encryptString(getSuccessorAddress().toString())) {
+			if (id>currentIntervalUpperBound
+					&& id<=Utilities.encryptString(getSuccessorAddress().toString()))
+				return this.getSuccessorAddress();
+			else {
+					InetSocketAddress auxNode = this.closestPrecedingNode(id);
+					if (auxNode==this.getNodeAddress()) // Base case, in order to block deadlock
+						return this.getNodeAddress();
+					// If another node is found, then send the request to it
+					GetSuccessorRequest getSuccessorRequest = new GetSuccessorRequest(id);
+					return Utilities.requestToNode(auxNode, getSuccessorRequest);
+				}
 		}
-		InetSocketAddress auxNode = this.closestPrecedingNode(id);
-		if (auxNode==this.getNodeAddress()) // Base case, in order to block deadlock
-			return this.getNodeAddress();
-		// If another node is found, then send the request to it
-		GetSuccessorRequest getSuccessorRequest = new GetSuccessorRequest(id);
-		return Utilities.requestToNode(auxNode, getSuccessorRequest);
+		else {
+				if (id<=Utilities.encryptString(getSuccessorAddress().toString())
+						|| (id % Math.pow(2, 32)) > getNodeUpperBound())
+					return this.getSuccessorAddress();
+				else {
+					InetSocketAddress auxNode = this.closestPrecedingNode(id);
+					if (auxNode==this.getNodeAddress()) // Base case, in order to block deadlock
+						return this.getNodeAddress();
+					// If another node is found, then send the request to it
+					GetSuccessorRequest getSuccessorRequest = new GetSuccessorRequest(id);
+					return Utilities.requestToNode(auxNode, getSuccessorRequest);
+				}
+		}
 	}
 
 	private InetSocketAddress closestPrecedingNode(Long id) {
 		for(int i=31;i>=0;i--) {
+			System.out.println("Sono nel closest!");
 			if(this.getFingerTable().get(i).getAddress() != null 
 					&& Utilities.encryptString(this.fingerTable.get(i).getAddress().toString())>this.currentIntervalUpperBound 
 					&& (Utilities.encryptString(this.fingerTable.get(i).getAddress().toString()))<id) {

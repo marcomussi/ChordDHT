@@ -16,7 +16,7 @@ public class Stabilize extends Thread {
 	public void run() {
 		System.out.println("Started stabilize process\n" 
 				+ node.getNodeAddress() + "\n");
-		int sleepTimeMillis = 2000;
+		int sleepTimeMillis = 5000;
 		while(true) {
 			try {
 				System.out.println("My predecessor is " + node.getPredecessorAddr());
@@ -34,7 +34,7 @@ public class Stabilize extends Thread {
 					// Se sono il successore di me stesso e ricevo una notify, aggiorno il mio successore con quello ricevuto
 					if (node.getSuccessorAddress()==node.getNodeAddress()) 
 						node.getFingerTable().get(0).setAddress(nodeSuccPredecessor);
-					// Se ho ottenuto una notify con x â‚¬ (n , successor) 
+					// Se ho ottenuto una notify con x € (n , successor) 
 					else {
 						nodeSuccPredecessorIntervalUpperBound = Utilities.encryptString(nodeSuccPredecessor.toString());
 						if ((nodeSuccPredecessorIntervalUpperBound > node.getNodeUpperBound() 
