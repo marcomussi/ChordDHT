@@ -41,7 +41,19 @@ public class ManageRequest extends Thread{
 		ObjectOutputStream objectOutputStream;
 		InetSocketAddress response = null;
 		if(request instanceof GetSuccessorRequest) {
-			//System.out.println("Sto cercando il successore di questo ID: " + ((GetSuccessorRequest) request).getId());
+			
+
+			// send back
+			try {
+				output = socket.getOutputStream();
+				objectOutputStream = new ObjectOutputStream(output);
+				objectOutputStream.writeObject(response);
+			} catch (IOException e) {	
+				e.printStackTrace();
+			}
+			return null;
+		}
+		if(request instanceof GetSuccessorRequest) {
 			response = node.findSuccessor(((GetSuccessorRequest) request).getId());
 		}
 		if(request instanceof GetPredecessorRequest) {
@@ -65,9 +77,9 @@ public class ManageRequest extends Thread{
 					node.setPredecessorAddr(sourceAddress);
 				}
 			}
-		if(request instanceof CheckPredecessorStatusRequest) {
-			response = node.getNodeAddress();
-		}
+			if(request instanceof CheckPredecessorStatusRequest) {
+				response = node.getNodeAddress();
+			}
 		}
 		try {
 			output = socket.getOutputStream();

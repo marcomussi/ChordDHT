@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 import Request.GetSuccessorRequest;
@@ -9,16 +10,18 @@ public class Node {
 	private InetSocketAddress nodeAddr;
 	private InetSocketAddress predecessorAddr;
 	private Long currentIntervalUpperBound;
-	
+	private ArrayList<InetSocketAddress> succList;
 	private HashMap<Integer, FingerObject> fingerTable;
 	private Scanner in;
 	private Listener listenerThread;
 	private Stabilize stabilizerThread;
 	private FixFingers fixFingersThread;
-	private CheckPredecessor checkPredecessorThread;
+	private CheckSuccessors checkSuccessorsThread;
+	
 	
 	public Node () {
 		fingerTable = new HashMap<Integer, FingerObject>();
+		succList = new ArrayList<InetSocketAddress>(32);
 		setPredecessorAddr(null);
 	}
 	
@@ -36,6 +39,7 @@ public class Node {
 		nodeAddr = thisNode;
 		initFingerHashMap();
 		predecessorAddr = null;
+		
 		InetSocketAddress successorAddress = Utilities.requestToNode(connectionNode, new GetSuccessorRequest(currentIntervalUpperBound));
 		fingerTable.get(0).setAddress(successorAddress);
 		this.lauchThreads();
@@ -52,6 +56,9 @@ public class Node {
 			
 			fixFingersThread = new FixFingers(this);
 			fixFingersThread.start();
+			
+			checkSuccessorsThread = new CheckSuccessors(this);
+			checkSuccessorsThread.start();
 			
 			// checkPredecessorThread = new CheckPredecessor(this);
 			// checkPredecessorThread.start();
@@ -90,6 +97,16 @@ public class Node {
 
 	public InetSocketAddress getNodeAddress() {
 		return nodeAddr;
+	}
+	
+	public ArrayList<InetSocketAddress> getSuccList() {
+		return succList;
+	}
+	
+	public void updateSuccList(ArrayList<InetSocketAddress> succ) {
+		succList = (ArrayList<InetSocketAddress>) succ.clone();
+		succList.remove(succList.size()-1);
+		succList.add(0,this.getSuccessorAddress());
 	}
 
 	public Long getNodeUpperBound() {

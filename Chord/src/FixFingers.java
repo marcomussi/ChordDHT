@@ -1,8 +1,4 @@
 import java.io.IOException;
-import java.net.InetSocketAddress;
-
-import Request.GetPredecessorRequest;
-import Request.NotifyRequest;
 
 public class FixFingers extends Thread {
 	
