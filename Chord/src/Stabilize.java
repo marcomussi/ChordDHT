@@ -7,7 +7,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
-import Request.CheckPredecessorStatusRequest;
+import Request.CheckStatusRequest;
 import Request.GetPredecessorRequest;
 import Request.NotifyRequest;
 
@@ -18,7 +18,7 @@ public class Stabilize extends Thread {
 	private OutputStream output;
 	private InputStream input;
 	private ObjectOutputStream objectOutputStream;
-	private CheckPredecessorStatusRequest checkPredReq;
+	private CheckStatusRequest checkPredReq;
 	
 	public Stabilize(Node n) throws IOException {
 		this.node = n;
@@ -42,7 +42,7 @@ public class Stabilize extends Thread {
 					socket.setSoTimeout(1000);
 					output = socket.getOutputStream();
 					objectOutputStream = new ObjectOutputStream(output);
-					checkPredReq = new CheckPredecessorStatusRequest();
+					checkPredReq = new CheckStatusRequest();
 					objectOutputStream.writeObject(checkPredReq);
 					input = socket.getInputStream();
 					ObjectInputStream objectInputStream = new ObjectInputStream(input);
@@ -67,8 +67,10 @@ public class Stabilize extends Thread {
 			Long nodeSuccPredecessorIntervalUpperBound;
 			if (nodeSuccPredecessor!=null) {
 				// Se sono il successore di me stesso e ricevo una notify, aggiorno il mio successore con quello ricevuto
-				if (node.getSuccessorAddress()==node.getNodeAddress()) 
+				if (node.getSuccessorAddress()==node.getNodeAddress()) {
 					node.getFingerTable().get(0).setAddress(nodeSuccPredecessor);
+					node.updateSuccList(nodeSuccPredecessor);
+				}
 					// Se ho ottenuto una notify con x � (n , successor) 
 				else {
 					nodeSuccPredecessorIntervalUpperBound = Utilities.encryptString(nodeSuccPredecessor.toString());
@@ -76,12 +78,14 @@ public class Stabilize extends Thread {
 						if ((nodeSuccPredecessorIntervalUpperBound > node.getNodeUpperBound() 
 						&& nodeSuccPredecessorIntervalUpperBound < Utilities.encryptString(node.getSuccessorAddress().toString()))) {
 							node.getFingerTable().get(0).setAddress(nodeSuccPredecessor);
+							node.updateSuccList(nodeSuccPredecessor);
 						}
 					}
 					else
 						if (nodeSuccPredecessorIntervalUpperBound > node.getNodeUpperBound()
 								|| nodeSuccPredecessorIntervalUpperBound < node.getNodeUpperBound()) {
 							node.getFingerTable().get(0).setAddress(nodeSuccPredecessor);
+							node.updateSuccList(nodeSuccPredecessor);
 						}
 					}
 				}

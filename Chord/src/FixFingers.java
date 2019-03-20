@@ -21,9 +21,9 @@ public class FixFingers extends Thread {
 					Long currentId = (node.getNodeUpperBound() + (long) (Math.pow(2, next))) % (long) Math.pow(2, 32);
 					currentFingerEntry.setAddress(node.findSuccessor(currentId));
 				}
+				
 			} catch (InterruptedException e) {
 				//e.printStackTrace();
-				
 			};
 		}
 	}

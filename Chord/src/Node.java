@@ -3,6 +3,8 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
+
+import Request.GetSuccListRequest;
 import Request.GetSuccessorRequest;
 
 public class Node {
@@ -103,10 +105,13 @@ public class Node {
 		return succList;
 	}
 	
-	public void updateSuccList(ArrayList<InetSocketAddress> succ) {
-		succList = (ArrayList<InetSocketAddress>) succ.clone();
-		succList.remove(succList.size()-1);
+	public void updateSuccList(InetSocketAddress succAddress) {
+		ArrayList<InetSocketAddress> succList = Utilities.requestListToNode(succAddress, new GetSuccListRequest());
+		if (!succList.isEmpty() ) {
+			succList.remove(succList.size()-1);
+		}
 		succList.add(0,this.getSuccessorAddress());
+		this.succList = succList;
 	}
 
 	public Long getNodeUpperBound() {

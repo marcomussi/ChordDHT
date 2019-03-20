@@ -5,9 +5,11 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.ArrayList;
 
-import Request.CheckPredecessorStatusRequest;
+import Request.CheckStatusRequest;
 import Request.GetPredecessorRequest;
+import Request.GetSuccListRequest;
 import Request.GetSuccessorRequest;
 import Request.NotifyRequest;
 
@@ -40,14 +42,13 @@ public class ManageRequest extends Thread{
 	private String process(Object request) {
 		ObjectOutputStream objectOutputStream;
 		InetSocketAddress response = null;
-		if(request instanceof GetSuccessorRequest) {
-			
-
-			// send back
+		ArrayList<InetSocketAddress> responseList = null;
+		if(request instanceof GetSuccListRequest) {
 			try {
+				responseList = node.getSuccList();
 				output = socket.getOutputStream();
 				objectOutputStream = new ObjectOutputStream(output);
-				objectOutputStream.writeObject(response);
+				objectOutputStream.writeObject(responseList);
 			} catch (IOException e) {	
 				e.printStackTrace();
 			}
@@ -77,9 +78,9 @@ public class ManageRequest extends Thread{
 					node.setPredecessorAddr(sourceAddress);
 				}
 			}
-			if(request instanceof CheckPredecessorStatusRequest) {
-				response = node.getNodeAddress();
-			}
+		}
+		if(request instanceof CheckStatusRequest) {
+			response = node.getNodeAddress();
 		}
 		try {
 			output = socket.getOutputStream();

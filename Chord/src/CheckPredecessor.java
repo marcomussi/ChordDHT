@@ -7,7 +7,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
-import Request.CheckPredecessorStatusRequest;
+import Request.CheckStatusRequest;
 
 public class CheckPredecessor extends Thread {
 
@@ -16,7 +16,7 @@ public class CheckPredecessor extends Thread {
 	private OutputStream output;
 	private InputStream input;
 	private ObjectOutputStream objectOutputStream;
-	private CheckPredecessorStatusRequest checkPredReq;
+	private CheckStatusRequest checkPredReq;
 	
 	public CheckPredecessor(Node n) throws IOException {
 		this.node = n;
@@ -39,7 +39,7 @@ public class CheckPredecessor extends Thread {
 				socket.setSoTimeout(1000);
 				output = socket.getOutputStream();
 				objectOutputStream = new ObjectOutputStream(output);
-				checkPredReq = new CheckPredecessorStatusRequest();
+				checkPredReq = new CheckStatusRequest();
 				objectOutputStream.writeObject(checkPredReq);
 				input = socket.getInputStream();
 				ObjectInputStream objectInputStream = new ObjectInputStream(input);

@@ -8,6 +8,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.security.MessageDigest; 
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import Request.Request; 
@@ -80,5 +81,29 @@ public class Utilities {
 		}
 		return null;		
 	}
+	
+	public static ArrayList<InetSocketAddress> requestListToNode(InetSocketAddress destination, Request request){
+		//System.out.println("RequestToNode invocata");
+		Socket socket;
+		OutputStream output;
+		InputStream input;
+		ObjectOutputStream objectOutputStream;
+		try {
+			socket = new Socket(destination.getAddress(), destination.getPort());
+			output = socket.getOutputStream();
+			objectOutputStream = new ObjectOutputStream(output);
+			objectOutputStream.writeObject(request);
+			input = socket.getInputStream();
+			ObjectInputStream objectInputStream = new ObjectInputStream(input);
+			ArrayList<InetSocketAddress> result = (ArrayList<InetSocketAddress>) objectInputStream.readObject();
+			return result;
+		} catch (IOException e) {	
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {	
+			e.printStackTrace();
+		}
+		return null;		
+	}
+
 
 }
