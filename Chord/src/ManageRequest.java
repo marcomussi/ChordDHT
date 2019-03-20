@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
+import Request.CheckPredecessorStatusRequest;
 import Request.GetPredecessorRequest;
 import Request.GetSuccessorRequest;
 import Request.NotifyRequest;
@@ -64,7 +65,9 @@ public class ManageRequest extends Thread{
 					node.setPredecessorAddr(sourceAddress);
 				}
 			}
-			
+		if(request instanceof CheckPredecessorStatusRequest) {
+			response = node.getNodeAddress();
+		}
 		}
 		try {
 			output = socket.getOutputStream();

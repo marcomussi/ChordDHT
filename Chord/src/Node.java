@@ -15,6 +15,7 @@ public class Node {
 	private Listener listenerThread;
 	private Stabilize stabilizerThread;
 	private FixFingers fixFingersThread;
+	private CheckPredecessor checkPredecessorThread;
 	
 	public Node () {
 		fingerTable = new HashMap<Integer, FingerObject>();
@@ -52,6 +53,9 @@ public class Node {
 			fixFingersThread = new FixFingers(this);
 			fixFingersThread.start();
 			
+			// checkPredecessorThread = new CheckPredecessor(this);
+			// checkPredecessorThread.start();
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -60,7 +64,7 @@ public class Node {
 
 	private void choose() {
 		while(true){
-			System.out.println("Select the operation:\n"
+			System.out.println("\nSelect the operation:\n"
 				+ "INFO\n"
 				+ "DELETENODE\n");
 			in = new Scanner(System.in);

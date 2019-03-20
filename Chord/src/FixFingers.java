@@ -26,7 +26,8 @@ public class FixFingers extends Thread {
 					currentFingerEntry.setAddress(node.findSuccessor(currentId));
 				}
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
+				
 			};
 		}
 	}
