@@ -10,6 +10,7 @@ import java.net.SocketTimeoutException;
 
 import Request.CheckStatusRequest;
 import Request.GetSuccListRequest;
+import Request.UpdateSuccessorListRequest;
 
 public class CheckSuccessors extends Thread {
 
@@ -52,11 +53,17 @@ public class CheckSuccessors extends Thread {
 				System.out.println("A problem occurs while contacting the successor. A new successor will be assigned soon.");
 				node.getSuccList().remove(0);
 				// If the successor list is empty, then I'm my own successor
-				if (node.getSuccList().isEmpty())
+				if (node.getSuccList().isEmpty()) {
 					node.getFingerTable().get(0).setAddress(node.getNodeAddress());
+				}
 				else {
 					InetSocketAddress newSuccessor = node.getSuccList().get(0);
 					node.getFingerTable().get(0).setAddress(newSuccessor);
+					node.updateSuccList(newSuccessor, true);
+				}
+				// Alert the predecessor that I've changed my successor list
+				if (node.getPredecessorAddr()!=null) {
+					Utilities.requestToNode(node.getPredecessorAddr(), new UpdateSuccessorListRequest());
 				}
 			} catch (IOException e) {	
 			e.printStackTrace();

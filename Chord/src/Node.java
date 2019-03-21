@@ -6,6 +6,7 @@ import java.util.Scanner;
 
 import Request.GetSuccListRequest;
 import Request.GetSuccessorRequest;
+import Request.UpdateSuccessorListRequest;
 
 public class Node {
 	
@@ -43,7 +44,7 @@ public class Node {
 		predecessorAddr = null;
 		InetSocketAddress successorAddress = Utilities.requestToNode(connectionNode, new GetSuccessorRequest(currentIntervalUpperBound));
 		fingerTable.get(0).setAddress(successorAddress);
-		updateSuccList(successorAddress);
+		updateSuccList(successorAddress, false);
 		this.lauchThreads();
 		this.choose();
 	}
@@ -85,6 +86,11 @@ public class Node {
 				case "DELETENODE" : 
 					System.exit(1); // 1 represent the exit in a correct way
 					break; // delete the node
+				case "LIST" :
+					for (int i=0; i<succList.size(); i++) {
+						System.out.println("Succ list entry " + i + " = " + succList.get(i));
+					}
+					break;
 				default : 
 					System.out.println("\nWrong Node Command!\n"); // ask again
 					break;
@@ -105,15 +111,34 @@ public class Node {
 		return succList;
 	}
 	
-	public void updateSuccList(InetSocketAddress succAddress) {
+	public void updateSuccList(InetSocketAddress succAddress, boolean removeLastEntry) {
 		ArrayList<InetSocketAddress> succList = Utilities.requestListToNode(succAddress, new GetSuccListRequest());
 		//if (!succList.isEmpty() ) {
 		//	succList.remove(succList.size()-1);
 		//}
+		ArrayList<InetSocketAddress> oldList = (ArrayList<InetSocketAddress>) this.succList.clone();
+		System.out.println("Updating the list for node " + getNodeAddress() + ". I received the list from " + succAddress);
+		System.out.println("I received the following list: ");
+		for (int i=0; i<succList.size(); i++) {
+			System.out.println("Succ list entry " + i + " = " + succList.get(i));
+		}
+		System.out.println("The flag is " + removeLastEntry);
 		succList.add(0, succAddress);
-		if (succList.size() > 31)
-			succList.remove(32);
+		if (succList.size() > 31 || removeLastEntry)
+			succList.remove(succList.size()-1);
+		// This is to handle the case in which a node crashed and I'm the last entry of the successor list received 
+		if (succList.get(succList.size()-1).equals(nodeAddr))
+			succList.remove(succList.size()-1);
+		System.out.println("Updated list: ");
+		for (int i=0; i<succList.size(); i++) {
+			System.out.println("Succ list entry " + i + " = " + succList.get(i));
+		}
+		System.out.println("My predecessor is " + predecessorAddr);
 		this.succList = succList;
+		if (!oldList.equals(succList) && predecessorAddr!=null && !oldList.isEmpty()) {
+			System.out.println("I'm in!");
+			Utilities.requestToNode(predecessorAddr, new UpdateSuccessorListRequest());
+		}
 	}
 
 	public Long getNodeUpperBound() {

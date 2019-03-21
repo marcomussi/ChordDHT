@@ -12,6 +12,7 @@ import Request.GetPredecessorRequest;
 import Request.GetSuccListRequest;
 import Request.GetSuccessorRequest;
 import Request.NotifyRequest;
+import Request.UpdateSuccessorListRequest;
 
 public class ManageRequest extends Thread{
 
@@ -61,7 +62,7 @@ public class ManageRequest extends Thread{
 			response = node.getPredecessorAddr();
 		}
 		if(request instanceof NotifyRequest) {
-			System.out.println("This notify request contain as source address: " + ((NotifyRequest) request).getAddress().toString());
+			//System.out.println("This notify request contain as source address: " + ((NotifyRequest) request).getAddress().toString());
 			InetSocketAddress sourceAddress = ((NotifyRequest) request).getAddress();
 			Long sourceAddressIntervalUpperBound = Utilities.encryptString(sourceAddress.toString());
 			if (sourceAddress == node.getNodeAddress())
@@ -82,6 +83,10 @@ public class ManageRequest extends Thread{
 			}
 		}
 		if(request instanceof CheckStatusRequest) {
+			response = node.getNodeAddress();
+		}
+		if(request instanceof UpdateSuccessorListRequest) {
+			node.updateSuccList(node.getSuccessorAddress(), true);
 			response = node.getNodeAddress();
 		}
 		try {

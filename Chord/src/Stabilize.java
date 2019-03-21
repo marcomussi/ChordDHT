@@ -32,7 +32,7 @@ public class Stabilize extends Thread {
 		int sleepTimeMillis = 500;
 		while(true) {
 			try {
-				System.out.println("My predecessor is " + node.getPredecessorAddr());
+				//System.out.println("My predecessor is " + node.getPredecessorAddr());
 				Thread.sleep(sleepTimeMillis);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -66,7 +66,7 @@ public class Stabilize extends Thread {
 				// Se sono il successore di me stesso e ricevo una notify, aggiorno il mio successore con quello ricevuto
 				if (node.getSuccessorAddress()==node.getNodeAddress()) {
 					node.getFingerTable().get(0).setAddress(nodeSuccPredecessor);
-					node.updateSuccList(nodeSuccPredecessor);
+					node.updateSuccList(nodeSuccPredecessor, true);
 				}
 					// Se ho ottenuto una notify con x € (n , successor) 
 				else {
@@ -75,14 +75,14 @@ public class Stabilize extends Thread {
 						if ((nodeSuccPredecessorIntervalUpperBound > node.getNodeUpperBound() 
 						&& nodeSuccPredecessorIntervalUpperBound < Utilities.encryptString(node.getSuccessorAddress().toString()))) {
 							node.getFingerTable().get(0).setAddress(nodeSuccPredecessor);
-							node.updateSuccList(nodeSuccPredecessor);
+							node.updateSuccList(nodeSuccPredecessor, true);
 						}
 					}
 					else
 						if (nodeSuccPredecessorIntervalUpperBound > node.getNodeUpperBound()
 								|| nodeSuccPredecessorIntervalUpperBound < node.getNodeUpperBound()) {
 							node.getFingerTable().get(0).setAddress(nodeSuccPredecessor);
-							node.updateSuccList(nodeSuccPredecessor);
+							node.updateSuccList(nodeSuccPredecessor, true);
 						}
 					}
 				}

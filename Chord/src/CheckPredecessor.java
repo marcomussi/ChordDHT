@@ -28,7 +28,7 @@ public class CheckPredecessor extends Thread {
 				+ node.getNodeAddress() + "\n");
 		int sleepTimeMillis = 2000;
 		while(true) {
-			System.out.println("My predecessor is " + node.getPredecessorAddr());
+			//System.out.println("My predecessor is " + node.getPredecessorAddr());
 			try {
 				Thread.sleep(sleepTimeMillis);
 			} catch (InterruptedException e) {
