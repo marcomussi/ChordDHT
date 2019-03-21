@@ -35,6 +35,8 @@ public class CheckPredecessor extends Thread {
 				e.printStackTrace();
 			}
 			try {
+				if (node.getPredecessorAddr()==null)
+					continue;
 				socket = new Socket(node.getPredecessorAddr().getAddress(),node.getPredecessorAddr().getPort());
 				socket.setSoTimeout(1000);
 				output = socket.getOutputStream();
@@ -44,7 +46,7 @@ public class CheckPredecessor extends Thread {
 				input = socket.getInputStream();
 				ObjectInputStream objectInputStream = new ObjectInputStream(input);
 				InetSocketAddress result = (InetSocketAddress) objectInputStream.readObject();
-				if(result == node.getPredecessorAddr())
+				if(result.equals(node.getPredecessorAddr()))
 					continue;
 				else
 					node.setPredecessorAddr(null);

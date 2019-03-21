@@ -3,6 +3,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -47,8 +48,8 @@ public class Stabilize extends Thread {
 					input = socket.getInputStream();
 					ObjectInputStream objectInputStream = new ObjectInputStream(input);
 					objectInputStream.readObject();
-				} catch (SocketTimeoutException e) {
-					e.printStackTrace();
+				} catch (SocketTimeoutException|ConnectException e) {
+					System.out.println("A problem occurs while contacting the predecessor. A new predecessor will be assigned soon");
 					node.setPredecessorAddr(null);
 				} catch (IOException e) {	
 					e.printStackTrace();
@@ -56,12 +57,8 @@ public class Stabilize extends Thread {
 					e.printStackTrace();
 				}
 			}
-			
 			// Get the node successor
 			InetSocketAddress nodeSucc = node.getSuccessorAddress();
-			// If the successor is still null, then continue
-			if (nodeSucc==null) 
-				continue;
 			// Get the node successor's predecessor (=x)
 			InetSocketAddress nodeSuccPredecessor = Utilities.requestToNode(nodeSucc, new GetPredecessorRequest());
 			Long nodeSuccPredecessorIntervalUpperBound;
@@ -71,7 +68,7 @@ public class Stabilize extends Thread {
 					node.getFingerTable().get(0).setAddress(nodeSuccPredecessor);
 					node.updateSuccList(nodeSuccPredecessor);
 				}
-					// Se ho ottenuto una notify con x � (n , successor) 
+					// Se ho ottenuto una notify con x € (n , successor) 
 				else {
 					nodeSuccPredecessorIntervalUpperBound = Utilities.encryptString(nodeSuccPredecessor.toString());
 					if (node.getNodeUpperBound() < Utilities.encryptString(node.getSuccessorAddress().toString())) {
@@ -89,8 +86,9 @@ public class Stabilize extends Thread {
 						}
 					}
 				}
-				if (node.getSuccessorAddress() != node.getNodeAddress())
+				if (!node.getSuccessorAddress().equals(node.getNodeAddress())) {
 					Utilities.requestToNode(node.getSuccessorAddress(), new NotifyRequest(node.getNodeAddress()));
+				}
 		}
 	}
 }

@@ -4,6 +4,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.security.MessageDigest; 
@@ -74,6 +75,8 @@ public class Utilities {
 			ObjectInputStream objectInputStream = new ObjectInputStream(input);
 			InetSocketAddress result = (InetSocketAddress) objectInputStream.readObject();
 			return result;
+		} catch (ConnectException e) {
+			System.out.println("A problem occur while contacting " + destination);
 		} catch (IOException e) {	
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {	

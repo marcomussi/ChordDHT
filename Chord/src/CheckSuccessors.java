@@ -3,6 +3,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -17,7 +18,6 @@ public class CheckSuccessors extends Thread {
 	private OutputStream output;
 	private InputStream input;
 	private ObjectOutputStream objectOutputStream;
-	private GetSuccListRequest getSuccListReq;
 	private CheckStatusRequest checkStatusRequest;
 	
 	public CheckSuccessors(Node n) throws IOException {
@@ -28,7 +28,7 @@ public class CheckSuccessors extends Thread {
 	public void run() {
 		System.out.println("Started CheckSuccessor process\n" 
 				+ node.getNodeAddress() + "\n");
-		int sleepTimeMillis = 2000;
+		int sleepTimeMillis = 500;
 		while(true) {
 			try {
 				Thread.sleep(sleepTimeMillis);
@@ -36,6 +36,9 @@ public class CheckSuccessors extends Thread {
 				e.printStackTrace();
 			}
 			try {
+				// If I'm the successor of myself, it's not useful to check
+				if (node.getSuccessorAddress().equals(node.getNodeAddress()))
+					continue;
 				socket = new Socket(node.getSuccessorAddress().getAddress(),node.getSuccessorAddress().getPort());
 				socket.setSoTimeout(1000);
 				output = socket.getOutputStream();
@@ -45,11 +48,16 @@ public class CheckSuccessors extends Thread {
 				input = socket.getInputStream();
 				ObjectInputStream objectInputStream = new ObjectInputStream(input);
 				objectInputStream.readObject();
-			} catch (SocketTimeoutException e) {
-				e.printStackTrace();
-				InetSocketAddress newSuccessor = node.getSuccList().get(1);
-				node.getFingerTable().get(0).setAddress(newSuccessor);
-				continue;
+			} catch (SocketTimeoutException|ConnectException e ) {
+				System.out.println("A problem occurs while contacting the successor. A new successor will be assigned soon.");
+				node.getSuccList().remove(0);
+				// If the successor list is empty, then I'm my own successor
+				if (node.getSuccList().isEmpty())
+					node.getFingerTable().get(0).setAddress(node.getNodeAddress());
+				else {
+					InetSocketAddress newSuccessor = node.getSuccList().get(0);
+					node.getFingerTable().get(0).setAddress(newSuccessor);
+				}
 			} catch (IOException e) {	
 			e.printStackTrace();
 			} catch (ClassNotFoundException e) {	

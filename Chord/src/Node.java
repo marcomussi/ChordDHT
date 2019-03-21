@@ -41,9 +41,9 @@ public class Node {
 		nodeAddr = thisNode;
 		initFingerHashMap();
 		predecessorAddr = null;
-		
 		InetSocketAddress successorAddress = Utilities.requestToNode(connectionNode, new GetSuccessorRequest(currentIntervalUpperBound));
 		fingerTable.get(0).setAddress(successorAddress);
+		updateSuccList(successorAddress);
 		this.lauchThreads();
 		this.choose();
 	}
@@ -107,10 +107,12 @@ public class Node {
 	
 	public void updateSuccList(InetSocketAddress succAddress) {
 		ArrayList<InetSocketAddress> succList = Utilities.requestListToNode(succAddress, new GetSuccListRequest());
-		if (!succList.isEmpty() ) {
-			succList.remove(succList.size()-1);
-		}
-		succList.add(0,this.getSuccessorAddress());
+		//if (!succList.isEmpty() ) {
+		//	succList.remove(succList.size()-1);
+		//}
+		succList.add(0, succAddress);
+		if (succList.size() > 31)
+			succList.remove(32);
 		this.succList = succList;
 	}
 
@@ -160,8 +162,8 @@ public class Node {
 				return this.getSuccessorAddress();
 			else {
 					InetSocketAddress auxNode = this.closestPrecedingNode(id);
-					if (auxNode==this.getNodeAddress()) // Base case, in order to block deadlock
-						return this.getNodeAddress();
+					if (auxNode.equals(this.nodeAddr)) // Base case, in order to block deadlock
+						return this.nodeAddr;
 					// If another node is found, then send the request to it
 					GetSuccessorRequest getSuccessorRequest = new GetSuccessorRequest(id);
 					return Utilities.requestToNode(auxNode, getSuccessorRequest);
@@ -173,8 +175,8 @@ public class Node {
 					return this.getSuccessorAddress();
 				else {
 					InetSocketAddress auxNode = this.closestPrecedingNode(id);
-					if (auxNode==this.getNodeAddress()) // Base case, in order to block deadlock
-						return this.getNodeAddress();
+					if (auxNode.equals(this.nodeAddr)) // Base case, in order to block deadlock
+						return this.nodeAddr;
 					// If another node is found, then send the request to it
 					GetSuccessorRequest getSuccessorRequest = new GetSuccessorRequest(id);
 					return Utilities.requestToNode(auxNode, getSuccessorRequest);
