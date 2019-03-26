@@ -17,7 +17,7 @@ public class SearchRequest extends Request {
 		return key;
 	}
 
-	// Maybe not necessary, the constructor can be enouth
+	// Maybe not necessary, the constructor can be enough
 	public void setKey(Long key) {
 		this.key=key;
 	}
