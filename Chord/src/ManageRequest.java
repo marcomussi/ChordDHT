@@ -11,7 +11,9 @@ import Request.CheckStatusRequest;
 import Request.GetPredecessorRequest;
 import Request.GetSuccListRequest;
 import Request.GetSuccessorRequest;
+import Request.IdRequest;
 import Request.NotifyRequest;
+import Request.SearchRequest;
 import Request.UpdateSuccessorListRequest;
 
 public class ManageRequest extends Thread{
@@ -44,12 +46,33 @@ public class ManageRequest extends Thread{
 		ObjectOutputStream objectOutputStream;
 		InetSocketAddress response = null;
 		ArrayList<InetSocketAddress> responseList = null;
+		if(request instanceof SearchRequest) {
+			try {
+				output = socket.getOutputStream();
+				objectOutputStream = new ObjectOutputStream(output);
+				objectOutputStream.writeObject(
+						node.findSuccessor(((SearchRequest) request).getKey()));
+			} catch (IOException e) {	
+				e.printStackTrace();
+			}
+			return null;
+		}
 		if(request instanceof GetSuccListRequest) {
 			try {
 				responseList = node.getSuccList();
 				output = socket.getOutputStream();
 				objectOutputStream = new ObjectOutputStream(output);
 				objectOutputStream.writeObject(responseList);
+			} catch (IOException e) {	
+				e.printStackTrace();
+			}
+			return null;
+		}
+		if(request instanceof IdRequest) {
+			try {
+				output = socket.getOutputStream();
+				objectOutputStream = new ObjectOutputStream(output);
+				objectOutputStream.writeObject(node.getNodeUpperBound());
 			} catch (IOException e) {	
 				e.printStackTrace();
 			}
@@ -62,21 +85,24 @@ public class ManageRequest extends Thread{
 			response = node.getPredecessorAddr();
 		}
 		if(request instanceof NotifyRequest) {
-			//System.out.println("This notify request contain as source address: " + ((NotifyRequest) request).getAddress().toString());
 			InetSocketAddress sourceAddress = ((NotifyRequest) request).getAddress();
-			Long sourceAddressIntervalUpperBound = Utilities.encryptString(sourceAddress.toString());
+			Long sourceAddressIntervalUpperBound = 
+					Utilities.encryptString(sourceAddress.toString());
 			if (sourceAddress == node.getNodeAddress())
 				return null;
 			if (node.getPredecessorAddr() == null)
 				node.setPredecessorAddr(sourceAddress);
 			else {
-				if (Utilities.encryptString(node.getPredecessorAddr().toString()) < node.getNodeUpperBound()) {
-					if ((sourceAddressIntervalUpperBound > Utilities.encryptString(node.getPredecessorAddr().toString())
-								&& sourceAddressIntervalUpperBound < node.getNodeUpperBound()))
+				if (Utilities.encryptString(node.getPredecessorAddr().toString()) 
+						< node.getNodeUpperBound()) {
+					if ((sourceAddressIntervalUpperBound 
+							> Utilities.encryptString(node.getPredecessorAddr().toString())
+							&& sourceAddressIntervalUpperBound < node.getNodeUpperBound()))
 						node.setPredecessorAddr(sourceAddress);
 				}
 				else {
-					if ((sourceAddressIntervalUpperBound > Utilities.encryptString(node.getPredecessorAddr().toString())
+					if ((sourceAddressIntervalUpperBound 
+							> Utilities.encryptString(node.getPredecessorAddr().toString())
 							|| sourceAddressIntervalUpperBound < node.getNodeUpperBound()))
 					node.setPredecessorAddr(sourceAddress);
 				}

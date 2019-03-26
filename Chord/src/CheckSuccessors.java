@@ -9,7 +9,6 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 
 import Request.CheckStatusRequest;
-import Request.GetSuccListRequest;
 import Request.UpdateSuccessorListRequest;
 
 public class CheckSuccessors extends Thread {

@@ -11,6 +11,7 @@ public class Client {
 	
 		int localPort, connectPort;
 		String connectIP, searchStr;
+		InetSocketAddress desiredDataNodeAddr;
 		Node x;
 		in = new Scanner(System.in);
 		
@@ -22,7 +23,7 @@ public class Client {
 			System.out.println("Select the operation:\n"
 				+ "CREATE\n"
 				+ "JOIN\n"
-				+ "SEARCH\n");
+				+ "SEARCHADDRESS\n");
 			String operation = in.next().toUpperCase();
 			
 			switch(operation) {
@@ -43,17 +44,18 @@ public class Client {
 					x.join(new InetSocketAddress(InetAddress.getLocalHost(),localPort),
 												new InetSocketAddress(connectIP,connectPort)); } 
 					break;	
-				case "SEARCH" : { // search in a node specified
+				case "SEARCHADDRESS" : { // search in a node specified
 					System.out.println("IP of the node to start search: ");
 					connectIP = in.next();
 					System.out.println("Port of the search node: ");
 					connectPort = Integer.parseInt(in.next());
 					System.out.println("Search string: ");
 					searchStr = in.next();
-					Utilities.searchItem(new InetSocketAddress(connectIP,connectPort),
+					desiredDataNodeAddr =  Utilities.searchItem(
+							new InetSocketAddress(connectIP,connectPort),
 							Utilities.encryptString(searchStr));
-				
-				}
+					System.out.println("You can find your data with key " + searchStr 
+							+ " in node " + desiredDataNodeAddr.toString() + "\n"); }
 					break;
 				case "EXIT" : // terminate the run
 					System.exit(1); // 1 -> good exit

@@ -12,6 +12,9 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import Request.GetPredecessorRequest;
+import Request.GetSuccessorRequest;
+import Request.IdRequest;
 import Request.Request; 
 
 public class Utilities {
@@ -44,14 +47,38 @@ public class Utilities {
 		return Long.toHexString(l);
 	}
 	
-	public static void searchItem(InetSocketAddress socketAddr, Long key) {
-		
+	public static InetSocketAddress searchItem(InetSocketAddress socketAddr, Long keyToSearch) {
+		/*
+		long precKey = Utilities.requestIdToNode(
+				Utilities.requestToNode(socketAddr, new GetPredecessorRequest()));
+		long key = Utilities.requestIdToNode(socketAddr);
+		if (precKey <= key) {
+			if(precKey <= keyToSearch && keyToSearch <= key) {
+				return socketAddr;
+			}
+			else {
+				return Utilities.nodeToNodeSearch(
+						socketAddr,key,Utilities.requestIdToNode(socketAddr));
+			}
+		}
+		else {
+			if(precKey <= keyToSearch && keyToSearch <= key) {
+				return Utilities.nodeToNodeSearch(
+						socketAddr,key,Utilities.requestIdToNode(socketAddr));
+			}
+			else {
+				return socketAddr;
+			}
+		}
+		*/
+		return Utilities.requestToNode(socketAddr, new GetSuccessorRequest(keyToSearch));
 	}
-	
+
 	public static void displayFingerTable(Node inputNode){
 		HashMap<Integer, FingerObject> fingerTable = inputNode.getFingerTable();
 		int size = fingerTable.size();
-		System.out.println("Displaying finger table for node: " + longToHexString(inputNode.getNodeUpperBound()));
+		System.out.println("Displaying finger table for node: " 
+					+ longToHexString(inputNode.getNodeUpperBound()));
 		System.out.println("i\tHashCurrentNode+2^i\tsuccessor");
 		for(int i=0 ; i < size; i++) {
 			System.out.println(i + "\t" 
@@ -60,8 +87,8 @@ public class Utilities {
 		}
 	}
 	
-	public static InetSocketAddress requestToNode(InetSocketAddress destination, Request request){
-		//System.out.println("RequestToNode invocata");
+	public static InetSocketAddress requestToNode(InetSocketAddress destination, 
+				Request request){
 		Socket socket;
 		OutputStream output;
 		InputStream input;
@@ -85,8 +112,31 @@ public class Utilities {
 		return null;		
 	}
 	
-	public static ArrayList<InetSocketAddress> requestListToNode(InetSocketAddress destination, Request request){
-		//System.out.println("RequestToNode invocata");
+	@SuppressWarnings({ "resource", "unchecked" })
+	public static ArrayList<InetSocketAddress> requestListToNode(
+								InetSocketAddress destination, Request request){
+		Socket socket;
+		OutputStream output;
+		InputStream input;
+		ObjectInputStream objectInputStream;
+		ObjectOutputStream objectOutputStream;
+		try {
+			socket = new Socket(destination.getAddress(), destination.getPort());
+			output = socket.getOutputStream();
+			objectOutputStream = new ObjectOutputStream(output);
+			objectOutputStream.writeObject(request);
+			input = socket.getInputStream();
+			objectInputStream = new ObjectInputStream(input);
+			return (ArrayList<InetSocketAddress>) objectInputStream.readObject();
+		} catch (IOException e) {	
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {	
+			e.printStackTrace();
+		}
+		return null;		
+	}
+	
+	public static long requestIdToNode(InetSocketAddress destination){
 		Socket socket;
 		OutputStream output;
 		InputStream input;
@@ -95,18 +145,20 @@ public class Utilities {
 			socket = new Socket(destination.getAddress(), destination.getPort());
 			output = socket.getOutputStream();
 			objectOutputStream = new ObjectOutputStream(output);
-			objectOutputStream.writeObject(request);
+			objectOutputStream.writeObject(new IdRequest());
 			input = socket.getInputStream();
 			ObjectInputStream objectInputStream = new ObjectInputStream(input);
-			ArrayList<InetSocketAddress> result = (ArrayList<InetSocketAddress>) objectInputStream.readObject();
+			long result = (long) objectInputStream.readObject();
 			return result;
+		} catch (ConnectException e) {
+			System.out.println("A problem occur while contacting " 
+					+ destination.toString() + " to obtain the key upper bound");
 		} catch (IOException e) {	
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {	
 			e.printStackTrace();
 		}
-		return null;		
+		return -1;
 	}
-
-
+	
 }

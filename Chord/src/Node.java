@@ -42,7 +42,9 @@ public class Node {
 		nodeAddr = thisNode;
 		initFingerHashMap();
 		predecessorAddr = null;
-		InetSocketAddress successorAddress = Utilities.requestToNode(connectionNode, new GetSuccessorRequest(currentIntervalUpperBound));
+		InetSocketAddress successorAddress = 
+				Utilities.requestToNode(connectionNode, 
+								new GetSuccessorRequest(currentIntervalUpperBound));
 		fingerTable.get(0).setAddress(successorAddress);
 		updateSuccList(successorAddress, false);
 		this.lauchThreads();
@@ -88,7 +90,8 @@ public class Node {
 					break; // delete the node
 				case "LIST" :
 					for (int i=0; i<succList.size(); i++) {
-						System.out.println("Succ list entry " + i + " = " + succList.get(i));
+						System.out.println("Succ list entry " + i 
+											+ " = " + succList.get(i));
 					}
 					break;
 				default : 
@@ -112,12 +115,17 @@ public class Node {
 	}
 	
 	public void updateSuccList(InetSocketAddress succAddress, boolean removeLastEntry) {
-		ArrayList<InetSocketAddress> succList = Utilities.requestListToNode(succAddress, new GetSuccListRequest());
-		//if (!succList.isEmpty() ) {
-		//	succList.remove(succList.size()-1);
-		//}
-		ArrayList<InetSocketAddress> oldList = (ArrayList<InetSocketAddress>) this.succList.clone();
-		System.out.println("Updating the list for node " + getNodeAddress() + ". I received the list from " + succAddress);
+		ArrayList<InetSocketAddress> succList = 
+					Utilities.requestListToNode(succAddress, new GetSuccListRequest());
+		/*
+		if (!succList.isEmpty() ) {
+			succList.remove(succList.size()-1);
+		} */
+		@SuppressWarnings("unchecked")
+		ArrayList<InetSocketAddress> oldList = 
+							(ArrayList<InetSocketAddress>) this.succList.clone();
+		System.out.println("Updating the list for node " + getNodeAddress() 
+							+ ". I received the list from " + succAddress);
 		System.out.println("I received the following list: ");
 		for (int i=0; i<succList.size(); i++) {
 			System.out.println("Succ list entry " + i + " = " + succList.get(i));
@@ -126,7 +134,8 @@ public class Node {
 		succList.add(0, succAddress);
 		if (succList.size() > 31 || removeLastEntry)
 			succList.remove(succList.size()-1);
-		// This is to handle the case in which a node crashed and I'm the last entry of the successor list received 
+		// This is to handle the case in which a node crashed and 
+		// I'm the last entry of the successor list received 
 		if (succList.get(succList.size()-1).equals(nodeAddr))
 			succList.remove(succList.size()-1);
 		System.out.println("Updated list: ");
@@ -176,18 +185,20 @@ public class Node {
 		Long auxHashValue;
 		currentIntervalUpperBound = Utilities.encryptString(nodeAddr.toString());
 		for(int i=0;i<32;i++) {
-			auxHashValue = ((long) Math.pow(2, i) + currentIntervalUpperBound) % (long) Math.pow(2, 32);
+			auxHashValue = ((long) Math.pow(2, i) + currentIntervalUpperBound) 
+													% (long) Math.pow(2, 32);
 			this.getFingerTable().put(i, new FingerObject(null, auxHashValue));
 		}
 	}
 	public InetSocketAddress findSuccessor(Long id) {	
-		if (this.getNodeUpperBound() < Utilities.encryptString(getSuccessorAddress().toString())) {
+		if (this.getNodeUpperBound() < Utilities.encryptString(
+												getSuccessorAddress().toString())) {
 			if (id>currentIntervalUpperBound
 					&& id<=Utilities.encryptString(getSuccessorAddress().toString()))
 				return this.getSuccessorAddress();
 			else {
 					InetSocketAddress auxNode = this.closestPrecedingNode(id);
-					if (auxNode.equals(this.nodeAddr)) // Base case, in order to block deadlock
+					if (auxNode.equals(this.nodeAddr)) // Base case, block deadlock
 						return this.nodeAddr;
 					// If another node is found, then send the request to it
 					GetSuccessorRequest getSuccessorRequest = new GetSuccessorRequest(id);
@@ -200,7 +211,7 @@ public class Node {
 					return this.getSuccessorAddress();
 				else {
 					InetSocketAddress auxNode = this.closestPrecedingNode(id);
-					if (auxNode.equals(this.nodeAddr)) // Base case, in order to block deadlock
+					if (auxNode.equals(this.nodeAddr)) // Base case, block deadlock
 						return this.nodeAddr;
 					// If another node is found, then send the request to it
 					GetSuccessorRequest getSuccessorRequest = new GetSuccessorRequest(id);
@@ -213,7 +224,8 @@ public class Node {
 		Long fingerEntry = 0L;
 		for(int i=31;i>=0;i--) {
 			if(this.getFingerTable().get(i).getAddress() != null) {
-				fingerEntry = Utilities.encryptString(this.fingerTable.get(i).getAddress().toString());
+				fingerEntry = Utilities.encryptString(
+								this.fingerTable.get(i).getAddress().toString());
 				if (currentIntervalUpperBound<id) {	
 					if(fingerEntry>currentIntervalUpperBound && fingerEntry<id) 
 						return fingerTable.get(i).getAddress();
