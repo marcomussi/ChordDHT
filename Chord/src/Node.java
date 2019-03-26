@@ -12,7 +12,7 @@ public class Node {
 	
 	private InetSocketAddress nodeAddr;
 	private InetSocketAddress predecessorAddr;
-	private Long currentIntervalUpperBound;
+	private Long nodeId;
 	private ArrayList<InetSocketAddress> succList;
 	private HashMap<Integer, FingerObject> fingerTable;
 	private Scanner in;
@@ -29,7 +29,7 @@ public class Node {
 	}
 	
 	public void create(InetSocketAddress thisNode) {
-		// port choosen by user and ip of the device automatically catched
+		// Port chosen by user and ip of the device automatically catched
 		nodeAddr = thisNode;
 		initFingerHashMap();
 		predecessorAddr = null;
@@ -44,7 +44,7 @@ public class Node {
 		predecessorAddr = null;
 		InetSocketAddress successorAddress = 
 				Utilities.requestToNode(connectionNode, 
-								new GetSuccessorRequest(currentIntervalUpperBound));
+								new GetSuccessorRequest(nodeId));
 		fingerTable.get(0).setAddress(successorAddress);
 		updateSuccList(successorAddress, false);
 		this.lauchThreads();
@@ -65,13 +65,9 @@ public class Node {
 			checkSuccessorsThread = new CheckSuccessors(this);
 			checkSuccessorsThread.start();
 			
-			// checkPredecessorThread = new CheckPredecessor(this);
-			// checkPredecessorThread.start();
-			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		//PRED
 	}
 
 	private void choose() {
@@ -84,18 +80,12 @@ public class Node {
 			switch(operation) {
 				case "INFO" : 
 					this.displayInfo(); 
-					break; // shows finger table
+					break; // Shows finger table
 				case "DELETENODE" : 
 					System.exit(1); // 1 represent the exit in a correct way
-					break; // delete the node
-				case "LIST" :
-					for (int i=0; i<succList.size(); i++) {
-						System.out.println("Succ list entry " + i 
-											+ " = " + succList.get(i));
-					}
-					break;
+					break; // Delete the node
 				default : 
-					System.out.println("\nWrong Node Command!\n"); // ask again
+					System.out.println("\nWrong Node Command!\n"); // Ask again
 					break;
 			}
 		}
@@ -117,20 +107,9 @@ public class Node {
 	public void updateSuccList(InetSocketAddress succAddress, boolean removeLastEntry) {
 		ArrayList<InetSocketAddress> succList = 
 					Utilities.requestListToNode(succAddress, new GetSuccListRequest());
-		/*
-		if (!succList.isEmpty() ) {
-			succList.remove(succList.size()-1);
-		} */
 		@SuppressWarnings("unchecked")
 		ArrayList<InetSocketAddress> oldList = 
 							(ArrayList<InetSocketAddress>) this.succList.clone();
-		System.out.println("Updating the list for node " + getNodeAddress() 
-							+ ". I received the list from " + succAddress);
-		System.out.println("I received the following list: ");
-		for (int i=0; i<succList.size(); i++) {
-			System.out.println("Succ list entry " + i + " = " + succList.get(i));
-		}
-		System.out.println("The flag is " + removeLastEntry);
 		succList.add(0, succAddress);
 		if (succList.size() > 31 || removeLastEntry)
 			succList.remove(succList.size()-1);
@@ -138,20 +117,17 @@ public class Node {
 		// I'm the last entry of the successor list received 
 		if (succList.get(succList.size()-1).equals(nodeAddr))
 			succList.remove(succList.size()-1);
-		System.out.println("Updated list: ");
 		for (int i=0; i<succList.size(); i++) {
 			System.out.println("Succ list entry " + i + " = " + succList.get(i));
 		}
-		System.out.println("My predecessor is " + predecessorAddr);
 		this.succList = succList;
 		if (!oldList.equals(succList) && predecessorAddr!=null && !oldList.isEmpty()) {
-			System.out.println("I'm in!");
 			Utilities.requestToNode(predecessorAddr, new UpdateSuccessorListRequest());
 		}
 	}
 
-	public Long getNodeUpperBound() {
-		return this.currentIntervalUpperBound;
+	public Long getNodeId() {
+		return this.nodeId;
 	}
 	
 	public HashMap<Integer, FingerObject> getFingerTable() {
@@ -178,22 +154,18 @@ public class Node {
 		this.predecessorAddr = predecessorAddr;
 	}
 	public void initFingerHashMap() {
-		/* fingerTable must be init because in this way we can use 
-		 * always "get" and "set" commands in the stabilize instead
-		 * of the "put", this allows to avoid the distiction between
-		 * the first and the others stabilize calls */
 		Long auxHashValue;
-		currentIntervalUpperBound = Utilities.encryptString(nodeAddr.toString());
+		nodeId = Utilities.encryptString(nodeAddr.toString());
 		for(int i=0;i<32;i++) {
-			auxHashValue = ((long) Math.pow(2, i) + currentIntervalUpperBound) 
+			auxHashValue = ((long) Math.pow(2, i) + nodeId) 
 													% (long) Math.pow(2, 32);
 			this.getFingerTable().put(i, new FingerObject(null, auxHashValue));
 		}
 	}
 	public InetSocketAddress findSuccessor(Long id) {	
-		if (this.getNodeUpperBound() < Utilities.encryptString(
+		if (this.getNodeId() < Utilities.encryptString(
 												getSuccessorAddress().toString())) {
-			if (id>currentIntervalUpperBound
+			if (id>nodeId
 					&& id<=Utilities.encryptString(getSuccessorAddress().toString()))
 				return this.getSuccessorAddress();
 			else {
@@ -207,7 +179,7 @@ public class Node {
 		}
 		else {
 				if (id<=Utilities.encryptString(getSuccessorAddress().toString())
-						|| (id % Math.pow(2, 32)) > getNodeUpperBound())
+						|| (id % Math.pow(2, 32)) > getNodeId())
 					return this.getSuccessorAddress();
 				else {
 					InetSocketAddress auxNode = this.closestPrecedingNode(id);
@@ -226,12 +198,12 @@ public class Node {
 			if(this.getFingerTable().get(i).getAddress() != null) {
 				fingerEntry = Utilities.encryptString(
 								this.fingerTable.get(i).getAddress().toString());
-				if (currentIntervalUpperBound<id) {	
-					if(fingerEntry>currentIntervalUpperBound && fingerEntry<id) 
+				if (nodeId<id) {	
+					if(fingerEntry>nodeId && fingerEntry<id) 
 						return fingerTable.get(i).getAddress();
 				}
 				else
-					if (fingerEntry>currentIntervalUpperBound || fingerEntry < id)
+					if (fingerEntry>nodeId || fingerEntry < id)
 						return fingerTable.get(i).getAddress();
 			}
 		}

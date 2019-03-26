@@ -12,13 +12,13 @@ public class FixFingers extends Thread {
 	public void run() {
 		System.out.println("Started fix fingers process\n" 
 				+ node.getNodeAddress() + "\n");
-		int sleepTimeMillis = 500;
+		int sleepTimeMillis = 300;
 		while(true) {
 			try {
 				for (int next = 0; next<32; next++) {
 					Thread.sleep(sleepTimeMillis);
 					FingerObject currentFingerEntry = node.getFingerTable().get(next);
-					Long currentId = (node.getNodeUpperBound() + (long) (Math.pow(2, next))) % (long) Math.pow(2, 32);
+					Long currentId = (node.getNodeId() + (long) (Math.pow(2, next))) % (long) Math.pow(2, 32);
 					currentFingerEntry.setAddress(node.findSuccessor(currentId));
 				}
 				

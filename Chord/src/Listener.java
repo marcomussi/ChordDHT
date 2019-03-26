@@ -14,23 +14,16 @@ public class Listener extends Thread {
 	
 	@Override
 	public void run() {
-		System.out.println("Started listener\n" 
+		System.out.println("Started listener process\n" 
 				+ node.getNodeAddress() + "\n");
-		// int i=0;
 		while (true) {
 			Socket connection = null;
 			try {
 				connection = serverSocket.accept();
-				/*System.out.println("Accepted connection " 
-						+ i++ + " from port " 
-						+ connection.getPort() 
-						+ " to server port " 
-						+ serverSocket.getLocalPort());
-						*/
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			// new thread to manage the single request arrived
+			// New thread to manage the single request arrived
 			new Thread(new ManageRequest(node,connection)).start();
 		}
 	}

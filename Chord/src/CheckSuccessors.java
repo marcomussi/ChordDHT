@@ -28,7 +28,7 @@ public class CheckSuccessors extends Thread {
 	public void run() {
 		System.out.println("Started CheckSuccessor process\n" 
 				+ node.getNodeAddress() + "\n");
-		int sleepTimeMillis = 500;
+		int sleepTimeMillis = 300;
 		while(true) {
 			try {
 				Thread.sleep(sleepTimeMillis);

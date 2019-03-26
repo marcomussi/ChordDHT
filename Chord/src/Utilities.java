@@ -12,21 +12,15 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import Request.GetPredecessorRequest;
 import Request.GetSuccessorRequest;
-import Request.IdRequest;
 import Request.Request; 
 
 public class Utilities {
 	// Method to calculate the SHA-1 of a given input string
 	public static Long encryptString(String input) {
         try { 
-            // getInstance() method is called with algorithm SHA-1 
             MessageDigest md = MessageDigest.getInstance("SHA-1"); 
-            // digest() method is called to calc message digest of the input string 
-            // returned as array of byte 
             byte[] messageDigest = md.digest(input.getBytes()); 
-            // Convert byte array into signum representation 
             BigInteger no = new BigInteger(1, messageDigest); 
             // Convert message digest into hex value 
             String hashtext = no.toString(16); 
@@ -34,43 +28,19 @@ public class Utilities {
             while (hashtext.length() < 32) { 
                 hashtext = "0" + hashtext; 
             } 
-            // return the last 8 characters of the HashText 
+            // Return the last 8 characters of the HashText 
             return Long.parseLong(hashtext.substring(hashtext.length() - 8),16); 
         }
-        // For specifying wrong message digest algorithms 
         catch (NoSuchAlgorithmException e) { 
             throw new RuntimeException(e); 
         }
 	}
 	
 	public static String longToHexString(long l) {
-		return Long.toHexString(l);
+		return String.format("%1$8s", Long.toHexString(l)).replace(" ", "0");
 	}
 	
 	public static InetSocketAddress searchItem(InetSocketAddress socketAddr, Long keyToSearch) {
-		/*
-		long precKey = Utilities.requestIdToNode(
-				Utilities.requestToNode(socketAddr, new GetPredecessorRequest()));
-		long key = Utilities.requestIdToNode(socketAddr);
-		if (precKey <= key) {
-			if(precKey <= keyToSearch && keyToSearch <= key) {
-				return socketAddr;
-			}
-			else {
-				return Utilities.nodeToNodeSearch(
-						socketAddr,key,Utilities.requestIdToNode(socketAddr));
-			}
-		}
-		else {
-			if(precKey <= keyToSearch && keyToSearch <= key) {
-				return Utilities.nodeToNodeSearch(
-						socketAddr,key,Utilities.requestIdToNode(socketAddr));
-			}
-			else {
-				return socketAddr;
-			}
-		}
-		*/
 		return Utilities.requestToNode(socketAddr, new GetSuccessorRequest(keyToSearch));
 	}
 
@@ -78,7 +48,8 @@ public class Utilities {
 		HashMap<Integer, FingerObject> fingerTable = inputNode.getFingerTable();
 		int size = fingerTable.size();
 		System.out.println("Displaying finger table for node: " 
-					+ longToHexString(inputNode.getNodeUpperBound()));
+					+ longToHexString(inputNode.getNodeId()));
+		System.out.println("Node ip and port: " +inputNode.getNodeAddress());
 		System.out.println("i\tHashCurrentNode+2^i\tsuccessor");
 		for(int i=0 ; i < size; i++) {
 			System.out.println(i + "\t" 
@@ -134,31 +105,6 @@ public class Utilities {
 			e.printStackTrace();
 		}
 		return null;		
-	}
-	
-	public static long requestIdToNode(InetSocketAddress destination){
-		Socket socket;
-		OutputStream output;
-		InputStream input;
-		ObjectOutputStream objectOutputStream;
-		try {
-			socket = new Socket(destination.getAddress(), destination.getPort());
-			output = socket.getOutputStream();
-			objectOutputStream = new ObjectOutputStream(output);
-			objectOutputStream.writeObject(new IdRequest());
-			input = socket.getInputStream();
-			ObjectInputStream objectInputStream = new ObjectInputStream(input);
-			long result = (long) objectInputStream.readObject();
-			return result;
-		} catch (ConnectException e) {
-			System.out.println("A problem occur while contacting " 
-					+ destination.toString() + " to obtain the key upper bound");
-		} catch (IOException e) {	
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {	
-			e.printStackTrace();
-		}
-		return -1;
 	}
 	
 }

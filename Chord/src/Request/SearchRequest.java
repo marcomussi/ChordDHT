@@ -5,7 +5,7 @@ public class SearchRequest extends Request {
 	private static final long serialVersionUID = -2665293296102796166L;
 	private Long key;
 	private Object obj;
-	/* we can send the search request thought the nodes and the node
+	/* We can send the search request thought the nodes and the node
 	 * that have the information can cast and fulfill the generic Object */
 	
 	public SearchRequest(Long key) {
@@ -17,7 +17,7 @@ public class SearchRequest extends Request {
 		return key;
 	}
 
-	// maybe not necessary, the constructor can be enouth
+	// Maybe not necessary, the constructor can be enouth
 	public void setKey(Long key) {
 		this.key=key;
 	}

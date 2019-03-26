@@ -11,9 +11,7 @@ import Request.CheckStatusRequest;
 import Request.GetPredecessorRequest;
 import Request.GetSuccListRequest;
 import Request.GetSuccessorRequest;
-import Request.IdRequest;
 import Request.NotifyRequest;
-import Request.SearchRequest;
 import Request.UpdateSuccessorListRequest;
 
 public class ManageRequest extends Thread{
@@ -46,33 +44,12 @@ public class ManageRequest extends Thread{
 		ObjectOutputStream objectOutputStream;
 		InetSocketAddress response = null;
 		ArrayList<InetSocketAddress> responseList = null;
-		if(request instanceof SearchRequest) {
-			try {
-				output = socket.getOutputStream();
-				objectOutputStream = new ObjectOutputStream(output);
-				objectOutputStream.writeObject(
-						node.findSuccessor(((SearchRequest) request).getKey()));
-			} catch (IOException e) {	
-				e.printStackTrace();
-			}
-			return null;
-		}
 		if(request instanceof GetSuccListRequest) {
 			try {
 				responseList = node.getSuccList();
 				output = socket.getOutputStream();
 				objectOutputStream = new ObjectOutputStream(output);
 				objectOutputStream.writeObject(responseList);
-			} catch (IOException e) {	
-				e.printStackTrace();
-			}
-			return null;
-		}
-		if(request instanceof IdRequest) {
-			try {
-				output = socket.getOutputStream();
-				objectOutputStream = new ObjectOutputStream(output);
-				objectOutputStream.writeObject(node.getNodeUpperBound());
 			} catch (IOException e) {	
 				e.printStackTrace();
 			}
@@ -94,16 +71,16 @@ public class ManageRequest extends Thread{
 				node.setPredecessorAddr(sourceAddress);
 			else {
 				if (Utilities.encryptString(node.getPredecessorAddr().toString()) 
-						< node.getNodeUpperBound()) {
+						< node.getNodeId()) {
 					if ((sourceAddressIntervalUpperBound 
 							> Utilities.encryptString(node.getPredecessorAddr().toString())
-							&& sourceAddressIntervalUpperBound < node.getNodeUpperBound()))
+							&& sourceAddressIntervalUpperBound < node.getNodeId()))
 						node.setPredecessorAddr(sourceAddress);
 				}
 				else {
 					if ((sourceAddressIntervalUpperBound 
 							> Utilities.encryptString(node.getPredecessorAddr().toString())
-							|| sourceAddressIntervalUpperBound < node.getNodeUpperBound()))
+							|| sourceAddressIntervalUpperBound < node.getNodeId()))
 					node.setPredecessorAddr(sourceAddress);
 				}
 			}

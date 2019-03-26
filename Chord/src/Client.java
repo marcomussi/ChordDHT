@@ -15,7 +15,7 @@ public class Client {
 		Node x;
 		in = new Scanner(System.in);
 		
-		/* while true loop is only to avoid the termination of the program
+		/* While true loop is only to avoid the termination of the program
 		 * in case of wrong command, in case of a correct one the execution
 		 * is moved to the Node class code */
 		while(true) {
@@ -23,17 +23,17 @@ public class Client {
 			System.out.println("Select the operation:\n"
 				+ "CREATE\n"
 				+ "JOIN\n"
-				+ "SEARCHADDRESS\n");
+				+ "SEARCH\n");
 			String operation = in.next().toUpperCase();
 			
 			switch(operation) {
-				case "CREATE" : { // create network
+				case "CREATE" : { // Create network
 					System.out.println("Local Destination Port (IP is taken from the device): ");
 					localPort = Integer.parseInt(in.next());
 					x = new Node();
 					x.create(new InetSocketAddress(InetAddress.getLocalHost(),localPort)); } 
 					break;
-				case "JOIN" : { // add node to the network of the connect node
+				case "JOIN" : { // Add node to the network of the connect node
 					System.out.println("Local Destination Port (IP is taken from the device): ");
 					localPort = Integer.parseInt(in.next());
 					System.out.println("IP of the node you want to connect: ");
@@ -44,7 +44,7 @@ public class Client {
 					x.join(new InetSocketAddress(InetAddress.getLocalHost(),localPort),
 												new InetSocketAddress(connectIP,connectPort)); } 
 					break;	
-				case "SEARCHADDRESS" : { // search in a node specified
+				case "SEARCH" : { // Search in a node specified
 					System.out.println("IP of the node to start search: ");
 					connectIP = in.next();
 					System.out.println("Port of the search node: ");
@@ -57,11 +57,11 @@ public class Client {
 					System.out.println("You can find your data with key " + searchStr 
 							+ " (Encrypted= " + Utilities.longToHexString(Utilities.encryptString(searchStr)) + ") in node " + desiredDataNodeAddr.toString() + "\n"); }
 					break;
-				case "EXIT" : // terminate the run
-					System.exit(1); // 1 -> good exit
+				case "EXIT" : // Terminate the run
+					System.exit(1); 
 					break;
-				default : // if the command is different from the above the program ends
-					System.out.println("\nWrong Input!\n"); 
+				default : // If the command is different from the above the program ends
+					System.out.println("Wrong Input!\n"); 
 					break;
 			}
 		}

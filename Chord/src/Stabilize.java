@@ -29,10 +29,9 @@ public class Stabilize extends Thread {
 	public void run() {
 		System.out.println("Started stabilize process\n" 
 				+ node.getNodeAddress() + "\n");
-		int sleepTimeMillis = 500;
+		int sleepTimeMillis = 300;
 		while(true) {
 			try {
-				//System.out.println("My predecessor is " + node.getPredecessorAddr());
 				Thread.sleep(sleepTimeMillis);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -63,24 +62,24 @@ public class Stabilize extends Thread {
 			InetSocketAddress nodeSuccPredecessor = Utilities.requestToNode(nodeSucc, new GetPredecessorRequest());
 			Long nodeSuccPredecessorIntervalUpperBound;
 			if (nodeSuccPredecessor!=null) {
-				// Se sono il successore di me stesso e ricevo una notify, aggiorno il mio successore con quello ricevuto
+				// If I'm the successor of myself and I receive a notify, I update my successor with the one received
 				if (node.getSuccessorAddress()==node.getNodeAddress()) {
 					node.getFingerTable().get(0).setAddress(nodeSuccPredecessor);
 					node.updateSuccList(nodeSuccPredecessor, true);
 				}
-					// Se ho ottenuto una notify con x â‚¬ (n , successor) 
+					// If I've obtained a notify with x € (n , successor) 
 				else {
 					nodeSuccPredecessorIntervalUpperBound = Utilities.encryptString(nodeSuccPredecessor.toString());
-					if (node.getNodeUpperBound() < Utilities.encryptString(node.getSuccessorAddress().toString())) {
-						if ((nodeSuccPredecessorIntervalUpperBound > node.getNodeUpperBound() 
+					if (node.getNodeId() < Utilities.encryptString(node.getSuccessorAddress().toString())) {
+						if ((nodeSuccPredecessorIntervalUpperBound > node.getNodeId() 
 						&& nodeSuccPredecessorIntervalUpperBound < Utilities.encryptString(node.getSuccessorAddress().toString()))) {
 							node.getFingerTable().get(0).setAddress(nodeSuccPredecessor);
 							node.updateSuccList(nodeSuccPredecessor, true);
 						}
 					}
 					else
-						if (nodeSuccPredecessorIntervalUpperBound > node.getNodeUpperBound()
-								|| nodeSuccPredecessorIntervalUpperBound < node.getNodeUpperBound()) {
+						if (nodeSuccPredecessorIntervalUpperBound > node.getNodeId()
+								|| nodeSuccPredecessorIntervalUpperBound < node.getNodeId()) {
 							node.getFingerTable().get(0).setAddress(nodeSuccPredecessor);
 							node.updateSuccList(nodeSuccPredecessor, true);
 						}
