@@ -1,7 +1,7 @@
 # Chord original paper Java implementation
-## *Developed by Giuseppe Severino and Marco Mussi*
-### Project for the Distributed System Course at Politecnico di Milano
-### Academic Year 2018/2019
+### *Developed by Giuseppe Severino and Marco Mussi*
+#### Project for the Distributed System Course at Politecnico di Milano
+#### Academic Year 2018/2019
 
 ## **How to run it**
 In order to run the project execute the Client class.
