@@ -55,7 +55,7 @@ public class Client {
 							new InetSocketAddress(connectIP,connectPort),
 							Utilities.encryptString(searchStr));
 					System.out.println("You can find your data with key " + searchStr 
-							+ " (Encrypted= " + Utilities.encryptString(searchStr) + ") in node " + desiredDataNodeAddr.toString() + "\n"); }
+							+ " (Encrypted= " + Utilities.longToHexString(Utilities.encryptString(searchStr)) + ") in node " + desiredDataNodeAddr.toString() + "\n"); }
 					break;
 				case "EXIT" : // terminate the run
 					System.exit(1); // 1 -> good exit
