@@ -1,5 +1,5 @@
 # Chord original paper Java implementation
-### *Developed by Giuseppe Severino and Marco Mussi*
+### *Developed by Marco Mussi and Giuseppe Severino*
 #### Project for the Distributed System Course at Politecnico di Milano
 #### Academic Year 2018/2019
 
